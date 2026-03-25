@@ -7,24 +7,35 @@ import { MicButton } from './components/MicButton';
 
 function App() {
   const [view, setView] = useState<'main' | 'settings' | 'about'>('main');
+  const [liveTranslation, setLiveTranslation] = useState('');
   const { addTranslation } = useTranslationStore();
   const { speak } = useTextToSpeech();
 
-  const handleResult = useCallback((transcript: string) => {
-    const translation = translationService.translate(transcript);
-    addTranslation(transcript, translation);
+  // Handle interim results for live translation
+  const handleInterim = useCallback((text: string) => {
+    const translation = translationService.translate(text);
+    setLiveTranslation(translation);
+  }, []);
+
+  // Handle final results
+  const handleResult = useCallback((text: string) => {
+    const translation = translationService.translate(text);
+    addTranslation(text, translation);
+    setLiveTranslation('');
   }, [addTranslation]);
 
   const {
     isListening,
-    transcript,
+    // transcript - not used directly
+    interimTranscript,
     isSupported,
     error,
     startListening,
     stopListening
   } = useSpeechRecognition({
     language: 'vi-VN',
-    onResult: handleResult
+    onResult: handleResult,
+    onInterim: handleInterim
   });
 
   const handleSpeak = (text: string) => {
@@ -95,10 +106,27 @@ function App() {
         <TranslationView onSpeak={handleSpeak} />
       </main>
 
-      {/* Current Transcript */}
-      {isListening && transcript && (
-        <div className="bg-blue-50 border-t border-blue-200 px-4 py-2">
-          <p className="text-sm text-blue-800">Hearing: {transcript}</p>
+      {/* Live Translation - Shows while listening */}
+      {isListening && (
+        <div className="bg-blue-50 border-t border-blue-200 px-4 py-3">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-xs font-medium text-blue-600 uppercase tracking-wide">Live Translation</span>
+          </div>
+          
+          {/* Original Vietnamese */}
+          {interimTranscript && (
+            <p className="text-sm text-blue-800 mb-1">
+              <span className="opacity-60">Hearing:</span> {interimTranscript}
+            </p>
+          )}
+          
+          {/* English Translation */}
+          {liveTranslation && (
+            <p className="text-lg font-semibold text-blue-900">
+              {liveTranslation}
+            </p>
+          )}
         </div>
       )}
 
