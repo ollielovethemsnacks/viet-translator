@@ -1,6 +1,23 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
-export interface SpeechRecognitionHook {
+interface WebSpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onstart?: (event: any) => void;
+  onend?: (event: any) => void;
+  onerror?: (event: any) => void;
+  onresult?: (event: any) => void;
+}
+
+type SpeechRecognitionConstructor = {
+  prototype: WebSpeechRecognition;
+  new(): WebSpeechRecognition;
+};
+
+interface SpeechRecognitionHook {
   isListening: boolean;
   currentTranscript: string;
   finalTranscript: string;
@@ -37,14 +54,14 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<WebSpeechRecognition | null>(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
     isMountedRef.current = true;
 
     // Check if browser supports speech recognition
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition as SpeechRecognitionConstructor | undefined;
 
     if (!SpeechRecognition) {
       if (isMountedRef.current) {

@@ -1,7 +1,3 @@
-import { useTranslationStore } from './stores/translationStore';
-import { translationService } from './services/translation';
-import { useTextToSpeech } from './hooks/useSpeechRecognition';
-
 interface MicButtonProps {
   isListening: boolean;
   onStartListening: () => void;
