@@ -6,6 +6,7 @@ interface WebSpeechRecognition extends EventTarget {
   lang: string;
   start(): void;
   stop(): void;
+  abort(): void;
   onstart?: (event: any) => void;
   onend?: (event: any) => void;
   onerror?: (event: any) => void;
@@ -21,7 +22,7 @@ interface SpeechRecognitionHook {
   isListening: boolean;
   currentTranscript: string;
   finalTranscript: string;
-  isAdmin: boolean;
+  isSupported: boolean;
   error: string | null;
   startListening: () => void;
   stopListening: () => void;
@@ -38,6 +39,7 @@ export interface SpeechRecognitionOptions {
 
 /**
  * Hook for Vietnamese speech recognition using Web Speech API
+ * Optimized for mobile Safari with auto-restart
  */
 export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): SpeechRecognitionHook {
   const {
@@ -52,27 +54,28 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [finalTranscript, setFinalTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
 
   const recognitionRef = useRef<WebSpeechRecognition | null>(null);
   const isMountedRef = useRef(true);
+  const shouldRestartRef = useRef(false);
+  const lastResultTimeRef = useRef<number>(Date.now());
+  const restartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    // Check if browser supports speech recognition
+  // Create recognition instance
+  const createRecognition = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition as SpeechRecognitionConstructor | undefined;
 
     if (!SpeechRecognition) {
-      if (isMountedRef.current) {
-        setError('Browser does not support speech recognition');
-        setIsAdmin(true);
-      }
-      return;
+      setIsSupported(false);
+      setError('Speech recognition not supported in this browser');
+      return null;
     }
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = continuous;
+    
+    // Mobile Safari works better with these settings
+    recognition.continuous = false; // iOS doesn't support true continuous
     recognition.interimResults = interimResults;
     recognition.lang = language;
 
@@ -80,31 +83,47 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       if (isMountedRef.current) {
         setIsListening(true);
         setError(null);
+        lastResultTimeRef.current = Date.now();
       }
     };
 
     recognition.onend = () => {
       if (isMountedRef.current) {
         setIsListening(false);
+        
+        // Auto-restart if we're still in "listening mode"
+        if (shouldRestartRef.current) {
+          const timeSinceLastResult = Date.now() - lastResultTimeRef.current;
+          
+          // Only restart if we haven't had a final result recently
+          if (timeSinceLastResult < 5000) {
+            restartTimeoutRef.current = setTimeout(() => {
+              if (shouldRestartRef.current && isMountedRef.current) {
+                try {
+                  recognition.start();
+                } catch (e) {
+                  console.log('Failed to restart recognition:', e);
+                }
+              }
+            }, 100);
+          }
+        }
       }
     };
 
     recognition.onerror = (event: any) => {
       const errorMessage = event.error || 'Unknown error';
+      
       if (isMountedRef.current) {
+        // Don't show error for normal stops
+        if (errorMessage === 'aborted' || errorMessage === 'no-speech') {
+          return;
+        }
+        
         setError(errorMessage);
         setIsListening(false);
         
-        // Auto-restart on network error
-        if (errorMessage === 'network' && isListening) {
-          setTimeout(() => {
-            try {
-              recognition.start();
-            } catch (e) {
-              // Ignore if already started
-            }
-          }, 1000);
-        } else if (onError) {
+        if (onError) {
           onError(errorMessage);
         }
       }
@@ -124,6 +143,8 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       }
 
       if (transcript) {
+        lastResultTimeRef.current = Date.now();
+        
         if (isFinal) {
           setFinalTranscript(transcript);
           setCurrentTranscript('');
@@ -137,40 +158,64 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       }
     };
 
-    recognitionRef.current = recognition;
+    return recognition;
+  }, [language, interimResults, onResult, onError]);
+
+  // Initialize recognition
+  useEffect(() => {
+    isMountedRef.current = true;
+    recognitionRef.current = createRecognition();
 
     return () => {
       isMountedRef.current = false;
-      if (recognition) {
+      shouldRestartRef.current = false;
+      
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+      }
+      
+      if (recognitionRef.current) {
         try {
-          recognition.stop();
+          recognitionRef.current.abort();
         } catch (e) {
           // Ignore
         }
       }
     };
-  }, [language, continuous, interimResults, onResult, onError, isListening]);
+  }, [createRecognition]);
 
   const startListening = useCallback(() => {
+    if (!recognitionRef.current) {
+      recognitionRef.current = createRecognition();
+    }
+    
     if (recognitionRef.current && !isListening) {
+      shouldRestartRef.current = true;
       try {
         recognitionRef.current.start();
       } catch (e) {
-        // May already be started
-        console.log('Speech recognition already started');
+        console.log('Speech recognition start error:', e);
       }
     }
-  }, [isListening]);
+  }, [isListening, createRecognition]);
 
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
+    shouldRestartRef.current = false;
+    
+    if (restartTimeoutRef.current) {
+      clearTimeout(restartTimeoutRef.current);
+    }
+    
+    if (recognitionRef.current) {
       try {
-        recognitionRef.current.stop();
+        recognitionRef.current.abort();
       } catch (e) {
         // Ignore
       }
     }
-  }, [isListening]);
+    
+    setIsListening(false);
+  }, []);
 
   const reset = useCallback(() => {
     setCurrentTranscript('');
@@ -182,7 +227,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
     isListening,
     currentTranscript,
     finalTranscript,
-    isAdmin,
+    isSupported,
     error,
     startListening,
     stopListening,
@@ -214,11 +259,10 @@ export function useTextToSpeech() {
 
   const speak = useCallback((text: string, voice?: SpeechSynthesisVoice) => {
     if (!window.speechSynthesis) {
-      setError('Text-to-speech not supported in this browser');
+      setError('Text-to-speech not supported');
       return false;
     }
 
-    // Cancel any ongoing speech
     window.speechSynthesis.cancel();
 
     if (!text) return false;
@@ -230,7 +274,7 @@ export function useTextToSpeech() {
     }
     
     utterance.lang = 'en-US';
-    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.rate = 0.9;
     utterance.pitch = 1;
 
     utterance.onstart = () => {
@@ -247,27 +291,4 @@ export function useTextToSpeech() {
       setError(event.error || 'Speech synthesis error');
     };
 
-    window.speechSynthesis.speak(utterance);
-    return true;
-  }, []);
-
-  const stopSpeaking = useCallback(() => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
-  }, []);
-
-  const getEnglishVoices = useCallback(() => {
-    return voices.filter(v => v.lang.startsWith('en'));
-  }, [voices]);
-
-  return {
-    voices,
-    isSpeaking,
-    error,
-    speak,
-    stopSpeaking,
-    getEnglishVoices
-  };
-}
+    window.s
