@@ -31,21 +31,13 @@ interface SpeechRecognitionHook {
 
 export interface SpeechRecognitionOptions {
   language?: string;
-  continuous?: boolean;
-  interimResults?: boolean;
   onResult?: (transcript: string, isFinal: boolean) => void;
   onError?: (error: string) => void;
 }
 
-/**
- * Hook for Vietnamese speech recognition using Web Speech API
- * Optimized for mobile Safari with auto-restart
- */
 export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): SpeechRecognitionHook {
   const {
     language = 'vi-VN',
-    continuous = true,
-    interimResults = true,
     onResult,
     onError
   } = options;
@@ -60,23 +52,20 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   const isMountedRef = useRef(true);
   const shouldRestartRef = useRef(false);
   const lastResultTimeRef = useRef<number>(Date.now());
-  const restartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const restartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Create recognition instance
   const createRecognition = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition as SpeechRecognitionConstructor | undefined;
 
     if (!SpeechRecognition) {
       setIsSupported(false);
-      setError('Speech recognition not supported in this browser');
+      setError('Speech recognition not supported');
       return null;
     }
 
     const recognition = new SpeechRecognition();
-    
-    // Mobile Safari works better with these settings
-    recognition.continuous = false; // iOS doesn't support true continuous
-    recognition.interimResults = interimResults;
+    recognition.continuous = false;
+    recognition.interimResults = true;
     recognition.lang = language;
 
     recognition.onstart = () => {
@@ -91,18 +80,16 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       if (isMountedRef.current) {
         setIsListening(false);
         
-        // Auto-restart if we're still in "listening mode"
         if (shouldRestartRef.current) {
           const timeSinceLastResult = Date.now() - lastResultTimeRef.current;
           
-          // Only restart if we haven't had a final result recently
           if (timeSinceLastResult < 5000) {
             restartTimeoutRef.current = setTimeout(() => {
               if (shouldRestartRef.current && isMountedRef.current) {
                 try {
                   recognition.start();
                 } catch (e) {
-                  console.log('Failed to restart recognition:', e);
+                  console.log('Failed to restart:', e);
                 }
               }
             }, 100);
@@ -115,7 +102,6 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       const errorMessage = event.error || 'Unknown error';
       
       if (isMountedRef.current) {
-        // Don't show error for normal stops
         if (errorMessage === 'aborted' || errorMessage === 'no-speech') {
           return;
         }
@@ -159,9 +145,8 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
     };
 
     return recognition;
-  }, [language, interimResults, onResult, onError]);
+  }, [language, onResult, onError]);
 
-  // Initialize recognition
   useEffect(() => {
     isMountedRef.current = true;
     recognitionRef.current = createRecognition();
@@ -194,7 +179,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
       try {
         recognitionRef.current.start();
       } catch (e) {
-        console.log('Speech recognition start error:', e);
+        console.log('Start error:', e);
       }
     }
   }, [isListening, createRecognition]);
@@ -235,9 +220,6 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Sp
   };
 }
 
-/**
- * Hook for text-to-speech in English
- */
 export function useTextToSpeech() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -291,4 +273,27 @@ export function useTextToSpeech() {
       setError(event.error || 'Speech synthesis error');
     };
 
-    window.s
+    window.speechSynthesis.speak(utterance);
+    return true;
+  }, []);
+
+  const stopSpeaking = useCallback(() => {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  }, []);
+
+  const getEnglishVoices = useCallback(() => {
+    return voices.filter(v => v.lang.startsWith('en'));
+  }, [voices]);
+
+  return {
+    voices,
+    isSpeaking,
+    error,
+    speak,
+    stopSpeaking,
+    getEnglishVoices
+  };
+}

@@ -13,14 +13,13 @@ export function App() {
   
   const {
     isListening,
-    isAdmin,
+    isSupported,
     error,
     startListening,
     stopListening,
     reset
   } = useSpeechRecognition({
     language: 'vi-VN',
-    continuous: true,
     onResult: (transcript: string, isFinal: boolean) => {
       if (isFinal && transcript) {
         handleTranslation(transcript);
@@ -100,7 +99,7 @@ export function App() {
                   stopListening();
                   setIsListening(false);
                 }}
-                isAdmin={isAdmin}
+                isAdmin={!isSupported}
                 error={error}
               />
             </div>
