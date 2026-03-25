@@ -7,35 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA000001 /* VietTranslatorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000 /* VietTranslatorApp.swift */; };
-		AA000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002 /* ContentView.swift */; };
-		AA000005 /* TranslationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000004 /* TranslationModels.swift */; };
-		AA000007 /* TranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000006 /* TranslationView.swift */; };
-		AA000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000008 /* SettingsView.swift */; };
-		AA00000B /* AudioCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000A /* AudioCaptureService.swift */; };
-		AA00000D /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000C /* SpeechRecognitionService.swift */; };
-		AA00000F /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000E /* TranslationService.swift */; };
-		AA000011 /* TranslationPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000010 /* TranslationPipeline.swift */; };
-		AA000013 /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000012 /* AudioSessionManager.swift */; };
+		AA0000000000000000000001 /* VietTranslatorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000000 /* VietTranslatorApp.swift */; };
+		AA0000000000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* ContentView.swift */; };
+		AA0000000000000000000005 /* TranslationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000004 /* TranslationModels.swift */; };
+		AA0000000000000000000007 /* TranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000006 /* TranslationView.swift */; };
+		AA0000000000000000000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000008 /* SettingsView.swift */; };
+		AA000000000000000000000B /* AudioCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000A /* AudioCaptureService.swift */; };
+		AA000000000000000000000D /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000C /* SpeechRecognitionService.swift */; };
+		AA000000000000000000000F /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000000E /* TranslationService.swift */; };
+		AA0000000000000000000011 /* TranslationPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000010 /* TranslationPipeline.swift */; };
+		AA0000000000000000000013 /* AudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000012 /* AudioSessionManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AA000000 /* VietTranslatorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VietTranslatorApp.swift; sourceTree = "<group>"; };
-		AA000001 /* VietTranslator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VietTranslator.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		AA000004 /* TranslationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationModels.swift; sourceTree = "<group>"; };
-		AA000006 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationView.swift; sourceTree = "<group>"; };
-		AA000008 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		AA00000A /* AudioCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCaptureService.swift; sourceTree = "<group>"; };
-		AA00000C /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
-		AA00000E /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
-		AA000010 /* TranslationPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationPipeline.swift; sourceTree = "<group>"; };
-		AA000012 /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionManager.swift; sourceTree = "<group>"; };
-		AA000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA0000000000000000000000 /* VietTranslatorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VietTranslatorApp.swift; path = VietTranslator/VietTranslatorApp.swift; sourceTree = SOURCE_ROOT; };
+		AA0000000000000000000001 /* VietTranslator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VietTranslator.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = VietTranslator/ContentView.swift; sourceTree = SOURCE_ROOT; };
+		AA0000000000000000000004 /* TranslationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TranslationModels.swift; path = VietTranslator/Models/TranslationModels.swift; sourceTree = SOURCE_ROOT; };
+		AA0000000000000000000006 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TranslationView.swift; path = VietTranslator/Views/TranslationView.swift; sourceTree = SOURCE_ROOT; };
+		AA0000000000000000000008 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = VietTranslator/Views/SettingsView.swift; sourceTree = SOURCE_ROOT; };
+		AA000000000000000000000A /* AudioCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AudioCaptureService.swift; path = VietTranslator/Services/AudioCaptureService.swift; sourceTree = SOURCE_ROOT; };
+		AA000000000000000000000C /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SpeechRecognitionService.swift; path = VietTranslator/Services/SpeechRecognitionService.swift; sourceTree = SOURCE_ROOT; };
+		AA000000000000000000000E /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TranslationService.swift; path = VietTranslator/Services/TranslationService.swift; sourceTree = SOURCE_ROOT; };
+		AA0000000000000000000010 /* TranslationPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TranslationPipeline.swift; path = VietTranslator/Services/TranslationPipeline.swift; sourceTree = SOURCE_ROOT; };
+		AA0000000000000000000012 /* AudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AudioSessionManager.swift; path = VietTranslator/Services/AudioSessionManager.swift; sourceTree = SOURCE_ROOT; };
+		AA0000000000000000000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = VietTranslator/Info.plist; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AA000015 /* Frameworks */ = {
+		AA0000000000000000000015 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -45,74 +45,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AA000016 = {
+		AA0000000000000000000016 = {
 			isa = PBXGroup;
 			children = (
-				AA000017 /* VietTranslator */,
-				AA000018 /* Products */,
+				AA0000000000000000000000 /* VietTranslatorApp.swift */,
+				AA0000000000000000000002 /* ContentView.swift */,
+				AA0000000000000000000004 /* TranslationModels.swift */,
+				AA0000000000000000000006 /* TranslationView.swift */,
+				AA0000000000000000000008 /* SettingsView.swift */,
+				AA000000000000000000000A /* AudioCaptureService.swift */,
+				AA000000000000000000000C /* SpeechRecognitionService.swift */,
+				AA000000000000000000000E /* TranslationService.swift */,
+				AA0000000000000000000010 /* TranslationPipeline.swift */,
+				AA0000000000000000000012 /* AudioSessionManager.swift */,
+				AA0000000000000000000014 /* Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
-		AA000017 /* VietTranslator */ = {
+		AA0000000000000000000017 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA000000 /* VietTranslatorApp.swift */,
-				AA000002 /* ContentView.swift */,
-				AA000019 /* Models */,
-				AA00001A /* Views */,
-				AA00001B /* Services */,
-				AA000014 /* Info.plist */,
-			);
-			path = VietTranslator;
-			sourceTree = "<group>";
-		};
-		AA000018 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				AA000001 /* VietTranslator.app */,
+				AA0000000000000000000001 /* VietTranslator.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		AA000019 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				AA000004 /* TranslationModels.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		AA00001A /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				AA000006 /* TranslationView.swift */,
-				AA000008 /* SettingsView.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		AA00001B /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				AA00000A /* AudioCaptureService.swift */,
-				AA00000C /* SpeechRecognitionService.swift */,
-				AA00000E /* TranslationService.swift */,
-				AA000010 /* TranslationPipeline.swift */,
-				AA000012 /* AudioSessionManager.swift */,
-			);
-			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA00001C /* VietTranslator */ = {
+		AA0000000000000000000018 /* VietTranslator */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA00001D /* Build configuration list for PBXNativeTarget "VietTranslator" */;
+			buildConfigurationList = AA0000000000000000000019 /* Build configuration list for PBXNativeTarget "VietTranslator" */;
 			buildPhases = (
-				AA00001E /* Sources */,
-				AA000015 /* Frameworks */,
-				AA00001F /* Resources */,
+				AA000000000000000000001A /* Sources */,
+				AA0000000000000000000015 /* Frameworks */,
+				AA000000000000000000001B /* Resources */,
 			);
 			buildRules = (
 			);
@@ -120,25 +87,25 @@
 			);
 			name = VietTranslator;
 			productName = VietTranslator;
-			productReference = AA000001 /* VietTranslator.app */;
+			productReference = AA0000000000000000000001 /* VietTranslator.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		AA000020 /* Project object */ = {
+		AA000000000000000000001C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					AA00001C = {
+					AA0000000000000000000018 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = AA000021 /* Build configuration list for PBXProject "VietTranslator" */;
+			buildConfigurationList = AA000000000000000000001D /* Build configuration list for PBXProject "VietTranslator" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -146,167 +113,47 @@
 				en,
 				Base,
 			);
-			mainGroup = AA000016;
-			productRefGroup = AA000018 /* Products */;
+			mainGroup = AA0000000000000000000016;
+			productRefGroup = AA0000000000000000000017 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA00001C /* VietTranslator */,
+				AA0000000000000000000018 /* VietTranslator */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AA00001F /* Resources */ = {
+		AA000000000000000000001B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+			buildActionMask = 214748			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AA00001E /* Sources */ = {
+		AA000000000000000000001A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA000001 /* VietTranslatorApp.swift in Sources */,
-				AA000003 /* ContentView.swift in Sources */,
-				AA000005 /* TranslationModels.swift in Sources */,
-				AA000007 /* TranslationView.swift in Sources */,
-				AA000009 /* SettingsView.swift in Sources */,
-				AA00000B /* AudioCaptureService.swift in Sources */,
-				AA00000D /* SpeechRecognitionService.swift in Sources */,
-				AA00000F /* TranslationService.swift in Sources */,
-				AA000011 /* TranslationPipeline.swift in Sources */,
-				AA000013 /* AudioSessionManager.swift in Sources */,
+				AA0000000000000000000001 /* VietTranslatorApp.swift in Sources */,
+				AA0000000000000000000003 /* ContentView.swift in Sources */,
+				AA0000000000000000000005 /* TranslationModels.swift in Sources */,
+				AA0000000000000000000007 /* TranslationView.swift in Sources */,
+				AA0000000000000000000009 /* SettingsView.swift in Sources */,
+				AA000000000000000000000B /* AudioCaptureService.swift in Sources */,
+				AA000000000000000000000D /* SpeechRecognitionService.swift in Sources */,
+				AA000000000000000000000F /* TranslationService.swift in Sources */,
+				AA0000000000000000000011 /* TranslationPipeline.swift in Sources */,
+				AA0000000000000000000013 /* AudioSessionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		AA000022 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
-		AA000023 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		AA000024 /* Debug */ = {
+		AA000000000000000000001E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -336,7 +183,7 @@
 			};
 			name = Debug;
 		};
-		AA000025 /* Release */ = {
+		AA000000000000000000001F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -354,7 +201,9 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited				);
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.johnny.viettranslator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -367,25 +216,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA00001D /* Build configuration list for PBXNativeTarget "VietTranslator" */ = {
+		AA0000000000000000000019 /* Build configuration list for PBXNativeTarget "VietTranslator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA000024 /* Debug */,
-				AA000025 /* Release */,
+				AA000000000000000000001E /* Debug */,
+				AA000000000000000000001F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA000021 /* Build configuration list for PBXProject "VietTranslator" */ = {
+		AA000000000000000000001D /* Build configuration list for PBXProject "VietTranslator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA000022 /* Debug */,
-				AA000023 /* Release */,
+				AA0000000000000000000020 /* Debug */,
+				AA0000000000000000000021 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = AA000020 /* Project object */;
+	rootObject = AA000000000000000000001C /* Project object */;
 }
