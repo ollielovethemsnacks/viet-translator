@@ -153,8 +153,8 @@ function App() {
               OFFLINE
             </div>
           )}
-          <button 
-            onClick={() => setView('settings')} 
+          <button
+            onClick={() => setView('settings')}
             className="p-2"
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,14 +179,14 @@ function App() {
               {useOfflineMode ? 'Offline Transcription' : 'Live Translation'}
             </span>
           </div>
-          
+
           {/* Original Vietnamese */}
           {interimTranscript && (
             <p className="text-sm text-blue-800 mb-1">
               <span className="opacity-60">Hearing:</span> {interimTranscript}
             </p>
           )}
-          
+
           {/* English Translation */}
           {liveTranslation && (
             <p className="text-lg font-semibold text-blue-900">
@@ -219,7 +219,7 @@ function App() {
         {useOfflineMode && isModelDownloading && (
           <div className="mt-2">
             <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div 
+              <div
                 className="bg-blue-500 h-1.5 rounded-full"
                 style={{ width: `${modelDownloadProgress}%` }}
               ></div>

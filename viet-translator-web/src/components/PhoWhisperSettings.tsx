@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-// PhoWhisper service - imported for future use
-// import { phoWhisperService } from '../services/phowhisperService';
 
 interface SettingsPanelProps {
   onClose: () => void;
@@ -42,7 +40,7 @@ export function SettingsPanel({
     };
 
     getStorageInfo();
-    
+
     // Check model status on mount
     checkModelStatus();
   }, [checkModelStatus]);
@@ -62,22 +60,22 @@ export function SettingsPanel({
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Settings</h1>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="text-blue-500"
           >
             Back
           </button>
         </div>
-        
+
         {/* Offline Mode Toggle */}
         <div className="bg-white rounded-lg p-4 shadow mb-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Offline Mode</h3>
               <p className="text-sm text-gray-600">
-                {isOfflineMode 
-                  ? 'Using PhoWhisper (offline)' 
+                {isOfflineMode
+                  ? 'Using PhoWhisper (offline)'
                   : 'Using Web Speech API (online)'}
               </p>
             </div>
@@ -99,7 +97,7 @@ export function SettingsPanel({
         {/* Model Download Section */}
         <div className="bg-white rounded-lg p-4 shadow mb-4">
           <h3 className="font-medium mb-3">PhoWhisper Model</h3>
-          
+
           <div className="space-y-3">
             {!isModelLoaded ? (
               <>
@@ -107,17 +105,18 @@ export function SettingsPanel({
                   Download the PhoWhisper model for offline Vietnamese speech recognition.
                   The model is ~74MB and optimized for Vietnamese.
                 </p>
-                
+
                 <div className="text-xs text-gray-500 space-y-1">
                   <div>• Vietnamese-optimized (844 hours of training data)</div>
                   <div>• Works completely offline after download</div>
                   <div>• ~74MB download size</div>
+                  <div>• Uses ONNX Runtime Web for browser inference</div>
                 </div>
-                
+
                 {isModelDownloading ? (
                   <div className="pt-3">
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${modelDownloadProgress}%` }}
                       ></div>
@@ -189,11 +188,22 @@ export function SettingsPanel({
         <div className="bg-blue-50 rounded-lg p-4 shadow mt-4 border border-blue-100">
           <h3 className="font-medium text-blue-800 mb-2">About PhoWhisper</h3>
           <p className="text-sm text-blue-700">
-            PhoWhisper is a Vietnamese-optimized speech recognition model trained on 844 hours 
+            PhoWhisper is a Vietnamese-optimized speech recognition model trained on 844 hours
             of Vietnamese audio. It provides accurate transcription completely offline after download.
           </p>
+          <div className="mt-3 text-xs text-blue-600 space-y-1">
+            <p><strong>Features:</strong></p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Offline speech recognition</li>
+              <li>Real-time transcription</li>
+              <li>Vietnamese language support</li>
+              <li>Browser-based inference</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default SettingsPanel;

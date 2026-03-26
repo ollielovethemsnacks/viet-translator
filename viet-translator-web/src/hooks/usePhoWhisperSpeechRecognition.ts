@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { phoWhisperService } from '../services/phowhisperService';
+import { createAudioStream, createAudioBufferManager } from '../utils/audioStreaming';
 
 interface PhoWhisperHook {
   isListening: boolean;
@@ -17,27 +18,31 @@ interface PhoWhisperHook {
   isOfflineMode: boolean;
   checkModelStatus: () => Promise<boolean>;
   clearError: () => void;
+  audioLevel: number;
+  transcriptionLanguage: string;
 }
 
 /**
  * PhoWhisper Speech Recognition Hook
- * 
- * NOTE: This is a PLACEHOLDER implementation for future PhoWhisper integration.
- * Full implementation requires:
- * 1. Converting PhoWhisper model to ONNX format
- * 2. Setting up ONNX Runtime Web
- * 3. Implementing audio preprocessing
- * 
- * For now, this hook manages the model download state but falls back to
- * showing an informative message about the future feature.
+ *
+ * Implements real-time Vietnamese speech recognition using PhoWhisper
+ * (Vietnamese-optimized Whisper model) with @xenova/transformers.
+ *
+ * Features:
+ * - Real-time audio capture and streaming
+ * - Automatic resampling to 16kHz
+ * - Chunked transcription for low latency
+ * - Offline operation after model download
+ * - Safari/iOS compatible
  */
-export function usePhoWhisperSpeechRecognition(_options: { 
+export function usePhoWhisperSpeechRecognition(options: {
   onResult?: (transcript: string, isFinal: boolean) => void;
   onInterim?: (transcript: string) => void;
+  language?: string;
 } = {}): PhoWhisperHook {
-  // onResult callback - reserved for future use
-  // const { onResult } = options;
-  
+  const { onResult, onInterim, language = 'vi' } = options;
+
+  // State
   const [isListening, setIsListening] = useState(false);
   const [isModelLoaded, setIsModelLoaded] = useState(false);
   const [isModelDownloading, setIsModelDownloading] = useState(false);
@@ -47,12 +52,22 @@ export function usePhoWhisperSpeechRecognition(_options: {
   const [error, setError] = useState<string | null>(null);
   const [isSupported] = useState(true);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const [audioLevel, setAudioLevel] = useState(0);
+  // Language state is declared but not used yet - reserved for future language selection
+  const [_transcriptionLanguage] = useState(language);
+
+  // Refs for audio streaming
+  const audioStreamRef = useRef<any>(null);
+  const audioBufferManagerRef = useRef<any>(null);
+  const transcriptionRef = useRef('');
+  const isProcessingRef = useRef(false);
 
   // Check model status on mount
   useEffect(() => {
     checkModelStatus();
   }, []);
 
+  // Check model status
   const checkModelStatus = async (): Promise<boolean> => {
     try {
       const downloaded = await phoWhisperService.isModelDownloaded();
@@ -64,20 +79,21 @@ export function usePhoWhisperSpeechRecognition(_options: {
     }
   };
 
+  // Download model
   const downloadModel = async () => {
     try {
       setIsModelDownloading(true);
       setModelDownloadProgress(0);
       setError(null);
-      
-      await phoWhisperService.downloadModel((progress) => {
+
+      await phoWhisperService.downloadModel((progress, step) => {
         setModelDownloadProgress(progress);
+        console.log(`Download: ${step} - ${progress}%`);
       });
-      
+
       setIsModelLoaded(true);
-      
-      // Show informational message
-      setError('Model downloaded! Note: Full PhoWhisper transcription requires additional setup. Using Web Speech API for now.');
+      console.log('Model download complete');
+
     } catch (err) {
       console.error('Error downloading model:', err);
       setError(`Download failed: ${(err as Error).message}`);
@@ -86,12 +102,34 @@ export function usePhoWhisperSpeechRecognition(_options: {
     }
   };
 
+  // Load model if not loaded
+  const ensureModelLoaded = async (): Promise<void> => {
+    if (!isModelLoaded && !isModelDownloading) {
+      try {
+        await phoWhisperService.loadModel();
+        setIsModelLoaded(true);
+      } catch (err) {
+        console.error('Error loading model:', err);
+        throw err;
+      }
+    }
+  };
+
+  // Start audio capture and transcription
   const startListening = useCallback(async () => {
     if (isListening) return;
-    
-    // Check if model is actually ready
+
+    // Check if model is ready
     if (!isModelLoaded) {
-      setError('PhoWhisper model not ready. Please download the model first or use Web Speech API mode.');
+      setError('PhoWhisper model not ready. Please download the model first.');
+      return;
+    }
+
+    // Ensure model is loaded
+    try {
+      await ensureModelLoaded();
+    } catch (err) {
+      setError(`Failed to load model: ${(err as Error).message}`);
       return;
     }
 
@@ -100,28 +138,121 @@ export function usePhoWhisperSpeechRecognition(_options: {
       setIsListening(true);
       setTranscript('');
       setInterimTranscript('');
+      transcriptionRef.current = '';
 
-      // NOTE: Full implementation would:
-      // 1. Start audio recording
-      // 2. Process audio through ONNX model
-      // 3. Stream results back
-      
-      // For now, show that this feature is coming
-      setError('PhoWhisper offline transcription coming soon! Switch to Web Speech API mode for now.');
-      setIsListening(false);
+      // Initialize audio stream
+      audioStreamRef.current = createAudioStream();
+      audioBufferManagerRef.current = createAudioBufferManager(30);
+
+      // Start audio capture
+      await audioStreamRef.current.start(
+        (chunk: Float32Array) => {
+          // Process audio chunk
+          processAudioChunk(chunk);
+        },
+        () => {
+          // Recording ended
+          setIsListening(false);
+        }
+      );
+
+      console.log('Listening started');
 
     } catch (err) {
-      console.error('Error starting PhoWhisper:', err);
+      console.error('Error starting listening:', err);
       setError(`Failed to start: ${(err as Error).message}`);
       setIsListening(false);
     }
   }, [isListening, isModelLoaded]);
 
-  const stopListening = useCallback(() => {
-    setIsListening(false);
-    setInterimTranscript('');
-  }, []);
+  // Process audio chunk
+  const processAudioChunk = async (chunk: Float32Array): Promise<void> => {
+    if (isProcessingRef.current) return;
 
+    try {
+      isProcessingRef.current = true;
+
+      // Add to buffer manager
+      if (audioBufferManagerRef.current) {
+        audioBufferManagerRef.current.addChunk(chunk);
+      }
+
+      // Update audio level
+      if (audioStreamRef.current) {
+        setAudioLevel(audioStreamRef.current.getAudioLevel());
+      }
+
+      // Transcribe the chunk
+      const result = await phoWhisperService.transcribe(chunk, _transcriptionLanguage);
+
+      if (result.text) {
+        // Update interim transcript
+        const currentText = transcriptionRef.current + (transcriptionRef.current ? ' ' : '') + result.text;
+        transcriptionRef.current = currentText;
+        setInterimTranscript(currentText);
+
+        // Call onInterim callback
+        if (onInterim) {
+          onInterim(result.text);
+        }
+
+        console.log(`Transcribed: ${result.text}`);
+      }
+
+    } catch (err) {
+      console.warn('Chunk transcription failed:', err);
+    } finally {
+      isProcessingRef.current = false;
+    }
+  };
+
+  // Stop audio capture
+  const stopListening = useCallback(async () => {
+    try {
+      // Stop audio stream
+      if (audioStreamRef.current) {
+        audioStreamRef.current.stop();
+        audioStreamRef.current = null;
+      }
+
+      // Get final transcription from buffer
+      let finalTranscript = transcriptionRef.current;
+
+      if (audioBufferManagerRef.current) {
+        const bufferedData = audioBufferManagerRef.current.getAudioData();
+        if (bufferedData.length > 0 && finalTranscript.length === 0) {
+          // Transcribe the full buffered audio
+          const result = await phoWhisperService.transcribe(bufferedData, _transcriptionLanguage);
+          finalTranscript = result.text;
+        }
+        audioBufferManagerRef.current.clear();
+      }
+
+      // Set final transcript
+      if (finalTranscript) {
+        setTranscript(finalTranscript);
+        setInterimTranscript('');
+        transcriptionRef.current = '';
+
+        // Call onResult callback
+        if (onResult) {
+          onResult(finalTranscript, true);
+        }
+      }
+
+      setIsListening(false);
+      setAudioLevel(0);
+
+      console.log('Listening stopped');
+
+    } catch (err) {
+      console.error('Error stopping listening:', err);
+      setError(`Failed to stop: ${(err as Error).message}`);
+      setIsListening(false);
+    }
+  }, [isListening, onResult]);
+
+  // Toggle offline mode
   const toggleOfflineMode = useCallback((enable: boolean) => {
     setIsOfflineMode(enable);
     if (enable && !isModelLoaded) {
@@ -131,6 +262,7 @@ export function usePhoWhisperSpeechRecognition(_options: {
     }
   }, [isModelLoaded]);
 
+  // Clear error
   const clearError = useCallback(() => {
     setError(null);
   }, []);
@@ -150,6 +282,10 @@ export function usePhoWhisperSpeechRecognition(_options: {
     toggleOfflineMode,
     isOfflineMode,
     checkModelStatus,
-    clearError
+    clearError,
+    audioLevel,
+    transcriptionLanguage: _transcriptionLanguage,
   };
 }
+
+export default usePhoWhisperSpeechRecognition;
