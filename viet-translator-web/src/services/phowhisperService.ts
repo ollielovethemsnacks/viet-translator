@@ -1,17 +1,24 @@
 /**
  * PhoWhisper Service - Full offline Vietnamese speech recognition
- * Uses @xenova/transformers with ONNX Runtime Web for browser-based inference
+ * Uses @xenova/transformers for browser-based inference
+ * Model: vinai/PhoWhisper-base (PyTorch-based, auto-converted to ONNX for browser)
  */
 
 import {
   AutoProcessor,
   WhisperForConditionalGeneration,
   type WhisperProcessor,
+  env,
 } from '@xenova/transformers';
 
 // Model configuration
 const PHOWHISPER_MODEL_ID = 'vinai/PhoWhisper-base';
 const TARGET_SAMPLE_RATE = 16000; // Whisper expects 16kHz audio
+
+// Configure transformers.js to use browser cache for model caching
+// This enables offline usage after initial download
+env.allowLocalModels = false; // Only use HuggingFace Hub for now
+env.useBrowserCache = true; // Cache downloaded models in browser
 
 interface ModelStatus {
   downloaded: boolean;
@@ -143,7 +150,6 @@ class PhoWhisperService {
           const stepProgress = 10 + Math.floor(progress * 0.25); // 10-35%
           updateProgress(stepProgress, 'downloading_processor');
         },
-        quantized: false, // Use full precision for better accuracy
       });
 
       // Step 3: Download and load model
@@ -153,7 +159,6 @@ class PhoWhisperService {
           const stepProgress = 35 + Math.floor(progress * 0.55); // 35-90%
           updateProgress(stepProgress, 'downloading_model');
         },
-        quantized: false,
       });
 
       // Step 4: Verify model is ready
@@ -275,7 +280,6 @@ class PhoWhisperService {
       const generatedIds = await this.model.generate(inputFeatures, {
         language: `<|${language}|>`,
         task: 'transcribe',
-        no_timestamps: true,
         max_new_tokens: 256,
       });
 
