@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { phoWhisperService } from '../services/phowhisperService';
+// PhoWhisper service - imported for future use
+// import { phoWhisperService } from '../services/phowhisperService';
 
 interface SettingsPanelProps {
   onClose: () => void;
@@ -149,7 +150,6 @@ export function SettingsPanel({
                 </p>
                 <button
                   onClick={() => {
-                    phoWhisperService.resetProgressCallback();
                     toggleOfflineMode(true);
                   }}
                   className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg"

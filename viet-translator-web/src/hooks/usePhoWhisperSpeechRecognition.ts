@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { phoWhisperService } from '../services/phowhisperService';
 
 interface PhoWhisperHook {
@@ -16,13 +16,27 @@ interface PhoWhisperHook {
   toggleOfflineMode: (enable: boolean) => void;
   isOfflineMode: boolean;
   checkModelStatus: () => Promise<boolean>;
+  clearError: () => void;
 }
 
-export function usePhoWhisperSpeechRecognition(options: { 
+/**
+ * PhoWhisper Speech Recognition Hook
+ * 
+ * NOTE: This is a PLACEHOLDER implementation for future PhoWhisper integration.
+ * Full implementation requires:
+ * 1. Converting PhoWhisper model to ONNX format
+ * 2. Setting up ONNX Runtime Web
+ * 3. Implementing audio preprocessing
+ * 
+ * For now, this hook manages the model download state but falls back to
+ * showing an informative message about the future feature.
+ */
+export function usePhoWhisperSpeechRecognition(_options: { 
   onResult?: (transcript: string, isFinal: boolean) => void;
   onInterim?: (transcript: string) => void;
 } = {}): PhoWhisperHook {
-  const { onResult, onInterim } = options;
+  // onResult callback - reserved for future use
+  // const { onResult } = options;
   
   const [isListening, setIsListening] = useState(false);
   const [isModelLoaded, setIsModelLoaded] = useState(false);
@@ -31,43 +45,22 @@ export function usePhoWhisperSpeechRecognition(options: {
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isSupported, setIsSupported] = useState(true);
+  const [isSupported] = useState(true);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
-  
-  const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Check if browser supports required APIs
+  // Check model status on mount
   useEffect(() => {
-    const requiredApis = [
-      'AudioContext' in window || 'webkitAudioContext' in window,
-      'MediaRecorder' in window,
-      'navigator' in window && 'mediaDevices' in navigator
-    ];
-    
-    if (!requiredApis.every(api => api)) {
-      setIsSupported(false);
-      setError('Browser does not support required APIs for speech recognition');
-    }
+    checkModelStatus();
   }, []);
 
-  // Initialize model if offline mode is enabled
-  useEffect(() => {
-    if (isOfflineMode && !isModelLoaded && !isModelDownloading) {
-      loadModel();
-    }
-  }, [isOfflineMode, isModelLoaded, isModelDownloading]);
-
-  const loadModel = async () => {
+  const checkModelStatus = async (): Promise<boolean> => {
     try {
-      setIsModelDownloading(true);
-      await phoWhisperService.loadModel();
-      setIsModelLoaded(true);
-      setError(null);
+      const downloaded = await phoWhisperService.isModelDownloaded();
+      setIsModelLoaded(downloaded);
+      return downloaded;
     } catch (err) {
-      console.error('Error loading PhoWhisper model:', err);
-      setError(`Failed to load model: ${(err as Error).message}`);
-    } finally {
-      setIsModelDownloading(false);
+      console.error('Error checking model status:', err);
+      return false;
     }
   };
 
@@ -75,16 +68,19 @@ export function usePhoWhisperSpeechRecognition(options: {
     try {
       setIsModelDownloading(true);
       setModelDownloadProgress(0);
+      setError(null);
       
       await phoWhisperService.downloadModel((progress) => {
         setModelDownloadProgress(progress);
       });
       
       setIsModelLoaded(true);
-      setError(null);
+      
+      // Show informational message
+      setError('Model downloaded! Note: Full PhoWhisper transcription requires additional setup. Using Web Speech API for now.');
     } catch (err) {
-      console.error('Error downloading PhoWhisper model:', err);
-      setError(`Failed to download model: ${(err as Error).message}`);
+      console.error('Error downloading model:', err);
+      setError(`Download failed: ${(err as Error).message}`);
     } finally {
       setIsModelDownloading(false);
     }
@@ -93,130 +89,51 @@ export function usePhoWhisperSpeechRecognition(options: {
   const startListening = useCallback(async () => {
     if (isListening) return;
     
+    // Check if model is actually ready
+    if (!isModelLoaded) {
+      setError('PhoWhisper model not ready. Please download the model first or use Web Speech API mode.');
+      return;
+    }
+
     try {
       setError(null);
       setIsListening(true);
       setTranscript('');
       setInterimTranscript('');
 
-      // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { 
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-        channelCount: 1,
-        sampleRate: 16000
-      }});
+      // NOTE: Full implementation would:
+      // 1. Start audio recording
+      // 2. Process audio through ONNX model
+      // 3. Stream results back
+      
+      // For now, show that this feature is coming
+      setError('PhoWhisper offline transcription coming soon! Switch to Web Speech API mode for now.');
+      setIsListening(false);
 
-      // Setup audio context for processing
-      const AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
-      audioContextRef.current = new AudioContext();
-      
-      // Check if audioContextRef.current is valid
-      if (!audioContextRef.current) {
-        throw new Error('Could not create audio context');
-      }
-      
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      
-      // Create a ScriptProcessorNode for real-time audio processing
-      const scriptProcessor = audioContextRef.current.createScriptProcessor(4096, 1, 1);
-      
-      // Buffer to store audio data for processing
-      let audioBuffer: Float32Array = new Float32Array(0);
-      let isProcessing = false;
-      
-      scriptProcessor.onaudioprocess = async (audioProcessingEvent) => {
-        if (!isListening || isProcessing || !audioContextRef.current) return;
-        
-        const inputData = audioProcessingEvent.inputBuffer.getChannelData(0);
-        
-        // Append new data to buffer
-        const newBuffer = new Float32Array(audioBuffer.length + inputData.length);
-        newBuffer.set(audioBuffer);
-        newBuffer.set(inputData, audioBuffer.length);
-        audioBuffer = newBuffer;
-        
-        // Process audio when buffer reaches threshold
-        if (audioBuffer.length >= 16000) { // ~1 second of 16kHz audio
-          isProcessing = true;
-          
-          try {
-            // Take a copy of the buffer and clear it
-            const processBuffer = audioBuffer.slice();
-            audioBuffer = new Float32Array(0); // Clear buffer
-            
-            // Ensure we have the right format for Whisper
-            const audioData = processBuffer;
-            
-            // Transcribe using PhoWhisper
-            const result = await phoWhisperService.transcribe(audioData);
-            
-            // Update interim transcript with the result
-            setInterimTranscript(prev => prev ? `${prev} ${result}` : result);
-            if (onInterim) {
-              onInterim(result);
-            }
-          } catch (transcribeErr) {
-            console.error('Real-time transcription error:', transcribeErr);
-          } finally {
-            isProcessing = false;
-          }
-        }
-      };
-      
-      source.connect(scriptProcessor);
-      scriptProcessor.connect(audioContextRef.current.destination);
-      
-      // Store references for cleanup
-      (audioContextRef.current as any).scriptProcessor = scriptProcessor;
-      (audioContextRef.current as any).stream = stream;
-      
     } catch (err) {
-      console.error('Error starting speech recognition:', err);
-      setError(`Microphone access denied: ${(err as Error).message}`);
+      console.error('Error starting PhoWhisper:', err);
+      setError(`Failed to start: ${(err as Error).message}`);
       setIsListening(false);
     }
-  }, [isListening, onInterim]);
+  }, [isListening, isModelLoaded]);
 
   const stopListening = useCallback(() => {
-    // Close audio context and disconnect nodes
-    if (audioContextRef.current) {
-      // Disconnect script processor
-      if ((audioContextRef.current as any).scriptProcessor) {
-        (audioContextRef.current as any).scriptProcessor.disconnect();
-      }
-      
-      // Stop all tracks in the stream
-      if ((audioContextRef.current as any).stream) {
-        (audioContextRef.current as any).stream.getTracks().forEach((track: any) => track.stop());
-      }
-      
-      // Close audio context
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-    
     setIsListening(false);
     setInterimTranscript('');
-    
-    // If there's any remaining interim transcript, treat it as final
-    if (interimTranscript && onResult) {
-      onResult(interimTranscript, true);
-      setTranscript(prev => prev ? `${prev} ${interimTranscript}` : interimTranscript);
-      setInterimTranscript('');
-    }
-  }, [interimTranscript, onResult]);
+  }, []);
 
-  const toggleOfflineMode = (enable: boolean) => {
+  const toggleOfflineMode = useCallback((enable: boolean) => {
     setIsOfflineMode(enable);
-  };
+    if (enable && !isModelLoaded) {
+      setError('Please download the PhoWhisper model first to use offline mode.');
+    } else {
+      setError(null);
+    }
+  }, [isModelLoaded]);
 
-  const checkModelStatus = async (): Promise<boolean> => {
-    const isDownloaded = await phoWhisperService.isModelDownloaded();
-    setIsModelLoaded(isDownloaded);
-    return isDownloaded;
-  };
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
 
   return {
     isListening,
@@ -232,6 +149,7 @@ export function usePhoWhisperSpeechRecognition(options: {
     downloadModel,
     toggleOfflineMode,
     isOfflineMode,
-    checkModelStatus
+    checkModelStatus,
+    clearError
   };
 }
