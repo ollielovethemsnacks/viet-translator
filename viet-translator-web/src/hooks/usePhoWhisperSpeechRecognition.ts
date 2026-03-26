@@ -104,7 +104,8 @@ export function usePhoWhisperSpeechRecognition(options: {
 
   // Load model if not loaded
   const ensureModelLoaded = async (): Promise<void> => {
-    if (!isModelLoaded && !isModelDownloading) {
+    // Always try to load model if not ready in service
+    if (!phoWhisperService.isModelReady() && !isModelDownloading) {
       try {
         await phoWhisperService.loadModel();
         setIsModelLoaded(true);
@@ -168,6 +169,12 @@ export function usePhoWhisperSpeechRecognition(options: {
   // Process audio chunk
   const processAudioChunk = async (chunk: Float32Array): Promise<void> => {
     if (isProcessingRef.current) return;
+    
+    // Check if model is ready before processing
+    if (!phoWhisperService.isModelReady()) {
+      console.warn('Model not ready, skipping chunk');
+      return;
+    }
 
     try {
       isProcessingRef.current = true;
@@ -220,10 +227,14 @@ export function usePhoWhisperSpeechRecognition(options: {
 
       if (audioBufferManagerRef.current) {
         const bufferedData = audioBufferManagerRef.current.getAudioData();
-        if (bufferedData.length > 0 && finalTranscript.length === 0) {
-          // Transcribe the full buffered audio
-          const result = await phoWhisperService.transcribe(bufferedData, _transcriptionLanguage);
-          finalTranscript = result.text;
+        if (bufferedData.length > 0 && finalTranscript.length === 0 && phoWhisperService.isModelReady()) {
+          // Transcribe the full buffered audio only if model is ready
+          try {
+            const result = await phoWhisperService.transcribe(bufferedData, _transcriptionLanguage);
+            finalTranscript = result.text;
+          } catch (err) {
+            console.warn('Final transcription failed:', err);
+          }
         }
         audioBufferManagerRef.current.clear();
       }
