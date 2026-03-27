@@ -57,27 +57,30 @@ export interface WhisperState {
   modelsAvailable: WhisperModel[];
   canTranscribe: boolean;
   error: string | null;
-  isIosSafari: boolean;
+  isIosBrowser: boolean;  // Changed from isIosSafari to isIosBrowser
 }
 
-// Detect iOS Safari
-// iOS Safari doesn't support cross-origin isolation (window.crossOriginIsolated)
-// which is required by @remotion/whisper-web for WASM functionality
-export function isIosSafari(): boolean {
+// Detect iOS browsers
+// ALL iOS browsers (Safari, Chrome, Firefox, Edge) use WebKit and don't support
+// cross-origin isolation (window.crossOriginIsolated), which is required by
+// @remotion/whisper-web for WASM functionality.
+// This function detects any iOS browser to show appropriate messaging.
+export function isIosBrowser(): boolean {
   if (typeof window === 'undefined') {
     return false;
   }
 
   const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
 
-  // Check for iOS devices
-  const isIos = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
-
-  // Check if it's Safari (not Chrome on iOS)
-  // iOS Chrome uses the same user agent as Safari, but we can detect it by checking for "CriOS"
-  const isSafari = /Safari/.test(userAgent) && !/Chrome|CriOS/.test(userAgent);
-
-  return isIos && isSafari;
+  // Check for iOS devices (iPad, iPhone, iPod)
+  // Note: iPadOS also includes "Mac" in user agent, so we need to check for touch support
+  const isIosDevice = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+  
+  // Also check for iPadOS (which reports as Macintosh)
+  const isMacintosh = /Macintosh/.test(userAgent);
+  const hasTouch = navigator.maxTouchPoints ? navigator.maxTouchPoints > 1 : false;
+  
+  return isIosDevice || (isMacintosh && hasTouch);
 }
 
 // Initialize whisper service
@@ -87,12 +90,12 @@ export async function initWhisperService(): Promise<WhisperState> {
     const loaded = await getLoadedModels();
     const canUse = await canUseWhisperWeb('small');
 
-    // Check if iOS Safari - it doesn't support cross-origin isolation
-    const iosSafari = isIosSafari();
+    // Check if iOS browser - ALL iOS browsers don't support cross-origin isolation
+    const iosBrowser = isIosBrowser();
 
-    // On iOS Safari, Whisper.wasm won't work due to lack of cross-origin isolation
+    // On iOS browsers, Whisper.wasm won't work due to lack of cross-origin isolation
     // But we can still use the app with Web Speech API as fallback
-    const isWhisperSupported = !iosSafari && canUse.supported;
+    const isWhisperSupported = !iosBrowser && canUse.supported;
 
     return {
       isSupported: isWhisperSupported,
@@ -102,21 +105,21 @@ export async function initWhisperService(): Promise<WhisperState> {
       modelsAvailable: models.map((m) => m.name as WhisperModel),
       canTranscribe: loaded.includes('small'),
       error: null,
-      isIosSafari: iosSafari,
+      isIosBrowser: iosBrowser,
     };
   } catch (error) {
-    // Check if iOS Safari even if there's an error
-    const iosSafari = isIosSafari();
+    // Check if iOS browser even if there's an error
+    const iosBrowser = isIosBrowser();
 
     return {
-      isSupported: !iosSafari,
+      isSupported: !iosBrowser,
       isDownloading: false,
       downloadProgress: 0,
       loadedModels: [],
       modelsAvailable: ['tiny', 'base', 'small', 'tiny.en', 'base.en', 'small.en'],
       canTranscribe: false,
       error: error instanceof Error ? error.message : 'Unknown error',
-      isIosSafari: iosSafari,
+      isIosBrowser: iosBrowser,
     };
   }
 }
@@ -124,8 +127,8 @@ export async function initWhisperService(): Promise<WhisperState> {
 // Check if whisper is supported
 export async function checkWhisperSupport(): Promise<boolean> {
   try {
-    const iosSafari = isIosSafari();
-    if (iosSafari) {
+    const iosBrowser = isIosBrowser();
+    if (iosBrowser) {
       return false;
     }
     const result = await canUseWhisperWeb('small');

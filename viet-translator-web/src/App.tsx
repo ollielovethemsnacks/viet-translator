@@ -20,7 +20,7 @@ function App() {
     modelsAvailable: getAvailableModelsList(),
     canTranscribe: false,
     error: null,
-    isIosSafari: false,
+    isIosBrowser: false,
   });
 
   const [selectedModel, setSelectedModel] = useState<WhisperModel>('small');
@@ -46,8 +46,8 @@ function App() {
         setWhisperState(state);
 
         if (!state.isSupported) {
-          if (state.isIosSafari) {
-            // iOS Safari doesn't support cross-origin isolation needed for Whisper.wasm
+          if (state.isIosBrowser) {
+            // iOS browsers don't support cross-origin isolation needed for Whisper.wasm
             setError('Your browser does not support offline whisper transcription. iOS Safari does not support the required WebAssembly features. Please use a different browser (Chrome, Firefox, or Edge) on your iPhone, or use the app on a desktop computer.');
           } else {
             setError('Your browser does not support offline whisper transcription. Please use a modern browser like Chrome, Firefox, or Safari.');
@@ -363,7 +363,7 @@ function App() {
                 </span>
               </div>
             )}
-            {whisperState.isIosSafari && (
+            {whisperState.isIosBrowser && (
               <div className="mt-4 rounded-lg bg-amber-500/10 border border-amber-500/20 p-4">
                 <div className="flex items-start gap-3">
                   <svg
@@ -650,7 +650,7 @@ function App() {
             )}
 
             {/* Not Supported Warning */}
-            {!whisperState.isSupported && !whisperState.isIosSafari && (
+            {!whisperState.isSupported && !whisperState.isIosBrowser && (
               <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-6">
                 <div className="flex items-start gap-3">
                   <svg
@@ -742,7 +742,7 @@ function App() {
             </div>
 
             {/* iOS Info Card */}
-            {whisperState.isIosSafari && (
+            {whisperState.isIosBrowser && (
               <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-6">
                 <h2 className="text-lg font-semibold mb-4 text-amber-400">iOS Safari Note</h2>
                 <p className="text-sm text-amber-300 mb-4">
