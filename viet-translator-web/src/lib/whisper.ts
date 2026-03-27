@@ -57,6 +57,27 @@ export interface WhisperState {
   modelsAvailable: WhisperModel[];
   canTranscribe: boolean;
   error: string | null;
+  isIosSafari: boolean;
+}
+
+// Detect iOS Safari
+// iOS Safari doesn't support cross-origin isolation (window.crossOriginIsolated)
+// which is required by @remotion/whisper-web for WASM functionality
+export function isIosSafari(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+
+  // Check for iOS devices
+  const isIos = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+
+  // Check if it's Safari (not Chrome on iOS)
+  // iOS Chrome uses the same user agent as Safari, but we can detect it by checking for "CriOS"
+  const isSafari = /Safari/.test(userAgent) && !/Chrome|CriOS/.test(userAgent);
+
+  return isIos && isSafari;
 }
 
 // Initialize whisper service
@@ -66,24 +87,36 @@ export async function initWhisperService(): Promise<WhisperState> {
     const loaded = await getLoadedModels();
     const canUse = await canUseWhisperWeb('small');
 
+    // Check if iOS Safari - it doesn't support cross-origin isolation
+    const iosSafari = isIosSafari();
+
+    // On iOS Safari, Whisper.wasm won't work due to lack of cross-origin isolation
+    // But we can still use the app with Web Speech API as fallback
+    const isWhisperSupported = !iosSafari && canUse.supported;
+
     return {
-      isSupported: canUse.supported,
+      isSupported: isWhisperSupported,
       isDownloading: false,
       downloadProgress: 0,
       loadedModels: loaded,
       modelsAvailable: models.map((m) => m.name as WhisperModel),
       canTranscribe: loaded.includes('small'),
       error: null,
+      isIosSafari: iosSafari,
     };
   } catch (error) {
+    // Check if iOS Safari even if there's an error
+    const iosSafari = isIosSafari();
+
     return {
-      isSupported: false,
+      isSupported: !iosSafari,
       isDownloading: false,
       downloadProgress: 0,
       loadedModels: [],
       modelsAvailable: ['tiny', 'base', 'small', 'tiny.en', 'base.en', 'small.en'],
       canTranscribe: false,
       error: error instanceof Error ? error.message : 'Unknown error',
+      isIosSafari: iosSafari,
     };
   }
 }
@@ -91,6 +124,10 @@ export async function initWhisperService(): Promise<WhisperState> {
 // Check if whisper is supported
 export async function checkWhisperSupport(): Promise<boolean> {
   try {
+    const iosSafari = isIosSafari();
+    if (iosSafari) {
+      return false;
+    }
     const result = await canUseWhisperWeb('small');
     return result.supported;
   } catch {

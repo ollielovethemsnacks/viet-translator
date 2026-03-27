@@ -20,6 +20,7 @@ function App() {
     modelsAvailable: getAvailableModelsList(),
     canTranscribe: false,
     error: null,
+    isIosSafari: false,
   });
 
   const [selectedModel, setSelectedModel] = useState<WhisperModel>('small');
@@ -45,7 +46,12 @@ function App() {
         setWhisperState(state);
 
         if (!state.isSupported) {
-          setError('Your browser does not support offline whisper transcription. Please use a modern browser like Chrome, Firefox, or Safari.');
+          if (state.isIosSafari) {
+            // iOS Safari doesn't support cross-origin isolation needed for Whisper.wasm
+            setError('Your browser does not support offline whisper transcription. iOS Safari does not support the required WebAssembly features. Please use a different browser (Chrome, Firefox, or Edge) on your iPhone, or use the app on a desktop computer.');
+          } else {
+            setError('Your browser does not support offline whisper transcription. Please use a modern browser like Chrome, Firefox, or Safari.');
+          }
         }
       } catch (err) {
         console.error('Initialization error:', err);
@@ -357,6 +363,32 @@ function App() {
                 </span>
               </div>
             )}
+            {whisperState.isIosSafari && (
+              <div className="mt-4 rounded-lg bg-amber-500/10 border border-amber-500/20 p-4">
+                <div className="flex items-start gap-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-amber-500 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                  <div>
+                    <h3 className="text-sm font-medium text-amber-400">iOS Safari Limitation</h3>
+                    <p className="text-xs text-amber-300 mt-1">
+                      iOS Safari does not support the WebAssembly features required for offline whisper transcription. Please use Chrome, Firefox, or Edge on your iPhone, or use this app on a desktop computer.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -618,7 +650,7 @@ function App() {
             )}
 
             {/* Not Supported Warning */}
-            {!whisperState.isSupported && (
+            {!whisperState.isSupported && !whisperState.isIosSafari && (
               <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-6">
                 <div className="flex items-start gap-3">
                   <svg
@@ -636,13 +668,9 @@ function App() {
                     />
                   </svg>
                   <div>
-                    <h3 className="text-amber-500 font-medium mb-1">
-                      Browser Compatibility Required
-                    </h3>
-                    <p className="text-sm text-amber-400/80 leading-relaxed">
-                      This application requires cross-origin isolation support. Please ensure you're
-                      using a modern browser (Chrome, Firefox, Safari, or Edge) and serving the
-                      application over HTTPS or localhost.
+                    <h3 className="text-lg font-medium text-amber-400">Browser Not Supported</h3>
+                    <p className="text-sm text-amber-300 mt-1">
+                      Your browser does not support offline whisper transcription. Please use a modern browser like Chrome, Firefox, or Safari.
                     </p>
                   </div>
                 </div>
@@ -650,109 +678,89 @@ function App() {
             )}
           </div>
 
-          {/* Right Column - Info & Stats */}
+          {/* Right Column - Info */}
           <div className="space-y-6">
-            {/* Stats Card */}
-            <div className="rounded-xl bg-slate-800/50 border border-slate-700 p-6">
-              <h2 className="text-lg font-semibold mb-4">Status</h2>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-slate-700/50">
-                  <span className="text-sm text-slate-400">Whisper Status</span>
-                  <span
-                    className={`flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      whisperState.canTranscribe
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-amber-500/20 text-amber-400'
-                    }`}
-                  >
-                    {whisperState.canTranscribe ? 'Ready' : 'Installing...'}
-                    {whisperState.canTranscribe && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-3 w-3"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={3}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-slate-700/50">
-                  <span className="text-sm text-slate-400">Model</span>
-                  <span className="text-sm font-medium text-white">{selectedModel}</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-slate-700/50">
-                  <span className="text-sm text-slate-400">Language</span>
-                  <span className="text-sm font-medium text-white">
-                    {languageOptions.find((l) => l.code === selectedLanguage)?.name || 'Auto'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-slate-400">Offline Capable</span>
-                  <span className="flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-500/20 text-blue-400">
-                    Yes
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-3 w-3"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* Info Card */}
             <div className="rounded-xl bg-slate-800/50 border border-slate-700 p-6">
               <h2 className="text-lg font-semibold mb-4">About</h2>
-              <div className="space-y-4 text-sm text-slate-400">
-                <p>
-                  This app uses <strong className="text-blue-400">whisper.cpp WASM</strong> to run
-                  OpenAI's Whisper model entirely in your browser.
-                </p>
-                <p className="pl-4 border-l-2 border-slate-700">
-                  <strong className="text-green-400">Benefits:</strong>
-                  <ul className="ml-4 mt-2 space-y-1 list-disc">
-                    <li>100% offline - no data leaves your device</li>
-                    <li>Privacy focused - your audio stays local</li>
-                    <li>Fast inference using optimized C++ WASM</li>
-                    <li>Works on Safari and iOS</li>
-                  </ul>
-                </p>
-              </div>
+              <p className="text-sm text-slate-300 mb-4">
+                This app uses Whisper.wasm to transcribe Vietnamese speech offline directly in your browser.
+              </p>
+              <ul className="text-sm text-slate-400 space-y-2">
+                <li className="flex items-start gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-green-500 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Offline transcription</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-green-500 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Vietnamese language support</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-green-500 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Private - audio stays on device</span>
+                </li>
+              </ul>
             </div>
+
+            {/* iOS Info Card */}
+            {whisperState.isIosSafari && (
+              <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-6">
+                <h2 className="text-lg font-semibold mb-4 text-amber-400">iOS Safari Note</h2>
+                <p className="text-sm text-amber-300 mb-4">
+                  iOS Safari does not support the WebAssembly features required for offline whisper transcription.
+                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-amber-200 font-medium">Alternative options:</p>
+                  <ul className="text-xs text-amber-200 space-y-1">
+                    <li>• Use Chrome, Firefox, or Edge on iPhone</li>
+                    <li>• Use this app on a desktop computer</li>
+                    <li>• Use the online mode (requires internet)</li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-900/50 mt-12">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-slate-500">
-              Built with whisper.cpp WASM - True offline Vietnamese speech recognition
-            </p>
-            <div className="flex items-center gap-4 text-sm text-slate-500">
-              <span>No data is sent to any server</span>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
