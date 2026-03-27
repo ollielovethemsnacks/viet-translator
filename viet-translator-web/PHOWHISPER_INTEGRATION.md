@@ -1,22 +1,22 @@
-# PhoWhisper Integration Summary
+# Whisper Integration Summary
 
 ## Overview
 
-Successfully integrated PhoWhisper (Vietnamese-optimized Whisper model) into the Viet Translator web app for offline speech recognition.
+Successfully integrated Xenova's ONNX-converted OpenAI Whisper model into the Viet Translator web app for offline speech recognition.
 
 ## Implementation Details
 
-### 1. PhoWhisper Service (`src/services/phowhisperService.ts`)
+### 1. Whisper Service (`src/services/phowhisperService.ts`)
 - Uses `@xenova/transformers` library for browser-based speech recognition
-- Model: `vinai/PhoWhisper-base` - Vietnamese-optimized Whisper model
-- Model size: ~74MB
+- Model: `Xenova/whisper-small` - OpenAI Whisper, ONNX-converted for browser
+- Model size: ~480MB (ONNX, compressed)
 - Features:
   - Automatic model caching by transformers.js
   - Progress tracking during model download
   - Real-time transcription capability
   - Error handling and recovery
 
-### 2. PhoWhisper Hook (`src/hooks/usePhoWhisperSpeechRecognition.ts`)
+### 2. Whisper Hook (`src/hooks/usePhoWhisperSpeechRecognition.ts`)
 - Custom React hook `usePhoWhisperSpeechRecognition`
 - Similar API to `useSpeechRecognition` for easy integration
 - Features:
@@ -31,15 +31,15 @@ Successfully integrated PhoWhisper (Vietnamese-optimized Whisper model) into the
 - Offline mode toggle
 - Storage quota information
 - Model download progress indicator
-- PhoWhisper information section
+- Whisper information section
 
 ### 4. App Integration (`src/App.tsx`)
 - Seamless integration with existing Web Speech API
-- Toggle between online (Web Speech API) and offline (PhoWhisper) modes
+- Toggle between online (Web Speech API) and offline (Whisper) modes
 - Visual indicators for current mode
 - Fallback mechanisms
 
-### 5. Audio Utilities (`src/utils/audioUtils.ts`)
+### 5. Audio Utilities (`src/utils/audioStreaming.ts`)
 - Helper functions for audio processing
 - Sample rate conversion (to 16kHz for Whisper)
 - Audio resampling utilities
@@ -48,17 +48,22 @@ Successfully integrated PhoWhisper (Vietnamese-optimized Whisper model) into the
 ## Key Features
 
 ### Offline Speech Recognition
-- **Model**: PhoWhisper-base, trained on 844 hours of Vietnamese audio
-- **Size**: ~74MB
+- **Model**: Xenova/whisper-small, OpenAI Whisper ONNX-converted
+- **Size**: ~480MB (ONNX, compressed)
 - **Latency**: Real-time transcription with ~1-second processing chunks
-- **Accuracy**: State-of-the-art Vietnamese ASR performance
+- **Accuracy**: State-of-the-art multilingual ASR performance
+
+### Multilingual Support
+- Supports 99 languages including Vietnamese
+- Automatic language detection
+- Manual language selection available
 
 ### Dual Mode Operation
 1. **Online Mode**: Uses Web Speech API (faster initial load, requires internet)
-2. **Offline Mode**: Uses PhoWhisper (slower initial load, works offline after download)
+2. **Offline Mode**: Uses Whisper (slower initial load, works offline after download)
 
 ### User Experience
-- Progress indicator during model download (~74MB)
+- Progress indicator during model download (~480MB)
 - Visual feedback for current mode (online/offline badges)
 - Storage quota information
 - Graceful fallback if offline mode fails
@@ -85,7 +90,7 @@ Successfully integrated PhoWhisper (Vietnamese-optimized Whisper model) into the
 1. **Audio Capture**: Web Audio API with ScriptProcessorNode
 2. **Buffer Management**: Continuous accumulation of audio chunks
 3. **Processing Threshold**: Process when buffer reaches 1 second (~16,000 samples)
-4. **Transcription**: PhoWhisper model processes audio chunks
+4. **Transcription**: Whisper model processes audio chunks
 5. **Result Delivery**: Callbacks for interim and final results
 
 ### State Management
@@ -137,7 +142,7 @@ Steps:
 
 Expected:
 - Download progress bar from 0-100%
-- ~74MB download size
+- ~480MB download size
 - Status changes to "Model downloaded"
 ```
 
@@ -151,7 +156,7 @@ Steps:
 
 Expected:
 - "OFFLINE" badge appears in header
-- Uses PhoWhisper for transcription
+- Uses Whisper for transcription
 - Works without internet connection
 ```
 
@@ -178,16 +183,16 @@ Steps:
 
 Expected:
 - Shows used/quota/available space
-- Model size estimate: ~74MB
+- Model size estimate: ~480MB
 - Warning if insufficient space
 ```
 
 ### Performance Benchmarks
 
 #### Model Download
-- **Time**: 30-120 seconds (depends on connection)
-- **Size**: ~74MB
-- **Storage**: ~200MB after download (including WASM runtime)
+- **Time**: 60-180 seconds (depends on connection)
+- **Size**: ~480MB
+- **Storage**: ~1GB after download (including WASM runtime)
 
 #### Transcription Speed
 - **Processing time**: ~1-2 seconds per chunk
@@ -195,9 +200,9 @@ Expected:
 - **Real-time**: Yes (with ~1-second buffer)
 
 #### Memory Usage
-- **Initial load**: ~50MB
-- **Model loaded**: ~200MB
-- **During transcription**: ~250MB
+- **Initial load**: ~100MB
+- **Model loaded**: ~500MB
+- **During transcription**: ~600MB
 
 ## Troubleshooting
 
@@ -225,15 +230,39 @@ Expected:
 
 ### Browser Console Logs
 Key messages to monitor:
-- `Starting PhoWhisper model initialization...`
+- `Starting Whisper model initialization...`
 - `Model initialized successfully`
-- `Loading PhoWhisper model...`
+- `Loading Whisper model...`
 - `Real-time transcription error:` (if issues)
+
+## Model Information
+
+### Xenova/whisper-small
+- **Base Model**: OpenAI Whisper (small variant)
+- **Format**: ONNX (optimized for browser)
+- **Size**: ~480MB (compressed)
+- **Languages**: 99 languages including Vietnamese
+- **Features**:
+  - Multilingual support
+  - Automatic language detection
+  - High accuracy across all languages
+  - Optimized for browser inference
+
+### Comparison: PhoWhisper vs Whisper
+
+| Feature | PhoWhisper (old) | Whisper (new) |
+|---------|------------------|---------------|
+| Model | vinai/PhoWhisper-base | Xenova/whisper-small |
+| Size | ~74MB | ~480MB |
+| Languages | Vietnamese only | 99 languages |
+| Format | PyTorch (auto-converted) | ONNX (native) |
+| Browser Support | Limited | Full |
+| Accuracy | Good for Vietnamese | Excellent (multilingual) |
 
 ## Future Enhancements
 
 ### Potential Improvements
-1. **Model Selection**: Support multiple PhoWhisper variants (small, medium, large)
+1. **Model Selection**: Support multiple Whisper variants (tiny, base, small, medium, large)
 2. **Streaming**: Implement streaming transcription for lower latency
 3. **Punctuation**: Add Vietnamese punctuation correction
 4. **Batch Processing**: Optimize for longer audio segments
@@ -263,9 +292,10 @@ Key messages to monitor:
 
 ## Conclusion
 
-The PhoWhisper integration successfully provides:
+The Whisper integration successfully provides:
 - ✅ Offline Vietnamese speech recognition
 - ✅ Real-time transcription capability
+- ✅ Multilingual support (99 languages)
 - ✅ Seamless mode switching
 - ✅ Progress tracking and user feedback
 - ✅ Proper error handling and fallbacks

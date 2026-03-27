@@ -23,10 +23,10 @@ interface PhoWhisperHook {
 }
 
 /**
- * PhoWhisper Speech Recognition Hook
+ * Whisper Speech Recognition Hook
  *
- * Implements real-time Vietnamese speech recognition using PhoWhisper
- * (Vietnamese-optimized Whisper model) with @xenova/transformers.
+ * Implements real-time Vietnamese speech recognition using Xenova's
+ * ONNX-converted OpenAI Whisper model with @xenova/transformers.
  *
  * Features:
  * - Real-time audio capture and streaming
@@ -34,6 +34,9 @@ interface PhoWhisperHook {
  * - Chunked transcription for low latency
  * - Offline operation after model download
  * - Safari/iOS compatible
+ *
+ * Note: This hook was previously called "PhoWhisper" but now uses
+ * standard OpenAI Whisper via Xenova's ONNX models for better compatibility.
  */
 export function usePhoWhisperSpeechRecognition(options: {
   onResult?: (transcript: string, isFinal: boolean) => void;
@@ -122,7 +125,7 @@ export function usePhoWhisperSpeechRecognition(options: {
 
     // Check if model is ready
     if (!isModelLoaded) {
-      setError('PhoWhisper model not ready. Please download the model first.');
+      setError('Whisper model not ready. Please download the model first.');
       return;
     }
 
@@ -169,7 +172,7 @@ export function usePhoWhisperSpeechRecognition(options: {
   // Process audio chunk
   const processAudioChunk = async (chunk: Float32Array): Promise<void> => {
     if (isProcessingRef.current) return;
-    
+
     // Check if model is ready before processing
     if (!phoWhisperService.isModelReady()) {
       console.warn('Model not ready, skipping chunk');
@@ -267,7 +270,7 @@ export function usePhoWhisperSpeechRecognition(options: {
   const toggleOfflineMode = useCallback((enable: boolean) => {
     setIsOfflineMode(enable);
     if (enable && !isModelLoaded) {
-      setError('Please download the PhoWhisper model first to use offline mode.');
+      setError('Please download the Whisper model first to use offline mode.');
     } else {
       setError(null);
     }

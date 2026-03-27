@@ -42,20 +42,20 @@ function App() {
     onInterim: handleInterim
   });
 
-  // PhoWhisper hook
+  // Whisper hook (Xenova's ONNX-converted Whisper model)
   const {
-    isListening: isPhoListening,
+    isListening: isWhisperListening,
     isModelLoaded,
     isModelDownloading,
     modelDownloadProgress,
-    interimTranscript: phoInterimTranscript,
-    isSupported: isPhoSupported,
-    error: phoError,
-    startListening: startPhoListening,
-    stopListening: stopPhoListening,
+    interimTranscript: whisperInterimTranscript,
+    isSupported: isWhisperSupported,
+    error: whisperError,
+    startListening: startWhisperListening,
+    stopListening: stopWhisperListening,
     downloadModel,
-    toggleOfflineMode: togglePhoOfflineMode,
-    isOfflineMode: isPhoOfflineMode,
+    toggleOfflineMode: toggleWhisperOfflineMode,
+    isOfflineMode: isWhisperOfflineMode,
     checkModelStatus
   } = usePhoWhisperSpeechRecognition({
     onResult: handleResult,
@@ -63,30 +63,30 @@ function App() {
   });
 
   // Determine which hook to use based on offline mode
-  const isListening = useOfflineMode ? isPhoListening : isWebListening;
-  const interimTranscript = useOfflineMode ? phoInterimTranscript : webInterimTranscript;
-  const error = useOfflineMode ? phoError : webError;
-  const isSupported = useOfflineMode ? isPhoSupported : isWebSupported;
+  const isListening = useOfflineMode ? isWhisperListening : isWebListening;
+  const interimTranscript = useOfflineMode ? whisperInterimTranscript : webInterimTranscript;
+  const error = useOfflineMode ? whisperError : webError;
+  const isSupported = useOfflineMode ? isWhisperSupported : isWebSupported;
 
   const startListening = useCallback(() => {
     if (useOfflineMode) {
       if (!isModelLoaded && !isModelDownloading) {
-        alert('Please download the PhoWhisper model first');
+        alert('Please download the Whisper model first');
         return;
       }
-      startPhoListening();
+      startWhisperListening();
     } else {
       startWebListening();
     }
-  }, [useOfflineMode, isModelLoaded, isModelDownloading, startPhoListening, startWebListening]);
+  }, [useOfflineMode, isModelLoaded, isModelDownloading, startWhisperListening, startWebListening]);
 
   const stopListening = useCallback(() => {
     if (useOfflineMode) {
-      stopPhoListening();
+      stopWhisperListening();
     } else {
       stopWebListening();
     }
-  }, [useOfflineMode, stopPhoListening, stopWebListening]);
+  }, [useOfflineMode, stopWhisperListening, stopWebListening]);
 
   const handleSpeak = (text: string) => {
     speak(text);
@@ -96,9 +96,9 @@ function App() {
     return (
       <SettingsPanel
         onClose={() => setView('main')}
-        isOfflineMode={isPhoOfflineMode}
+        isOfflineMode={isWhisperOfflineMode}
         toggleOfflineMode={(enable) => {
-          togglePhoOfflineMode(enable);
+          toggleWhisperOfflineMode(enable);
           setUseOfflineMode(enable);
         }}
         downloadModel={downloadModel}
@@ -127,7 +127,7 @@ function App() {
               <li>• Tap the microphone to speak Vietnamese</li>
               <li>• See English translations instantly</li>
               <li>• Works offline after model download</li>
-              <li>• Uses PhoWhisper (Vietnamese-optimized model)</li>
+              <li>• Uses Xenova Whisper (OpenAI, ONNX-converted)</li>
               <li>• 100+ common Vietnamese words</li>
             </ul>
           </div>

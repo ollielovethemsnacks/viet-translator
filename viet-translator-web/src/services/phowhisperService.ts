@@ -1,7 +1,12 @@
 /**
- * PhoWhisper Service - Full offline Vietnamese speech recognition
- * Uses @xenova/transformers for browser-based inference
- * Model: vinai/PhoWhisper-base (PyTorch-based, auto-converted to ONNX for browser)
+ * Whisper Service - Full offline Vietnamese speech recognition
+ * Uses @xenova/transformers with ONNX-converted OpenAI Whisper models
+ * Model: Xenova/whisper-small (ONNX-based, optimized for browser)
+ *
+ * This service uses Xenova's ONNX-converted Whisper models which are:
+ * - Fully compatible with browser environments
+ * - Available in the onnx/ subfolder
+ * - Optimized for faster inference without PyTorch
  */
 
 import {
@@ -12,11 +17,14 @@ import {
 } from '@xenova/transformers';
 
 // Model configuration
-const PHOWHISPER_MODEL_ID = 'vinai/PhoWhisper-base';
+// Using Xenova's ONNX-converted Whisper model for better browser compatibility
+// The ONNX models are in the onnx/ subfolder and don't require PyTorch conversion
+const WHISPER_MODEL_ID = 'Xenova/whisper-small';
 const TARGET_SAMPLE_RATE = 16000; // Whisper expects 16kHz audio
 
 // Configure transformers.js to use browser cache for model caching
 // This enables offline usage after initial download
+// Using ONNX Runtime for faster inference in browser
 env.allowLocalModels = false; // Only use HuggingFace Hub for now
 env.useBrowserCache = true; // Cache downloaded models in browser
 
@@ -36,7 +44,10 @@ interface TranscriptionResult {
 
 /**
  * PhoWhisperService - Handles offline Vietnamese speech recognition
- * using the PhoWhisper model (Vietnamese-optimized Whisper)
+ * using the Xenova Whisper model (OpenAI Whisper, ONNX-converted)
+ *
+ * Note: This service was previously called "PhoWhisper" but now uses
+ * standard OpenAI Whisper via Xenova's ONNX models for better compatibility.
  */
 class PhoWhisperService {
   private modelStatus: ModelStatus = {
@@ -81,10 +92,10 @@ class PhoWhisperService {
     description: string;
   }> {
     return {
-      id: PHOWHISPER_MODEL_ID,
-      size: '~74MB (compressed)',
-      language: 'Vietnamese',
-      description: 'Vietnamese-optimized Whisper model trained on 844 hours of Vietnamese audio',
+      id: WHISPER_MODEL_ID,
+      size: '~480MB (ONNX, compressed)',
+      language: 'Multilingual (including Vietnamese)',
+      description: 'OpenAI Whisper small model, ONNX-converted for browser use. Supports 99 languages including Vietnamese.',
     };
   }
 
@@ -110,7 +121,7 @@ class PhoWhisperService {
   }
 
   /**
-   * Download and cache the PhoWhisper model
+   * Download and cache the Whisper model
    * @param progressCallback Optional callback for download progress (0-100)
    */
   public async downloadModel(progressCallback?: (progress: number, step: string) => void): Promise<void> {
@@ -129,7 +140,7 @@ class PhoWhisperService {
     this.modelStatus.progress = 0;
 
     try {
-      console.log('Starting PhoWhisper model download and initialization...');
+      console.log('Starting Whisper model download and initialization...');
 
       // Update progress callback
       const updateProgress = (progress: number, step: string) => {
@@ -145,7 +156,7 @@ class PhoWhisperService {
 
       // Step 2: Download and load processor
       updateProgress(10, 'loading_processor');
-      this.processor = await AutoProcessor.from_pretrained(PHOWHISPER_MODEL_ID, {
+      this.processor = await AutoProcessor.from_pretrained(WHISPER_MODEL_ID, {
         progress_callback: (progress: number) => {
           const stepProgress = 10 + Math.floor(progress * 0.25); // 10-35%
           updateProgress(stepProgress, 'downloading_processor');
@@ -154,7 +165,7 @@ class PhoWhisperService {
 
       // Step 3: Download and load model
       updateProgress(35, 'loading_model');
-      this.model = await WhisperForConditionalGeneration.from_pretrained(PHOWHISPER_MODEL_ID, {
+      this.model = await WhisperForConditionalGeneration.from_pretrained(WHISPER_MODEL_ID, {
         progress_callback: (progress: number) => {
           const stepProgress = 35 + Math.floor(progress * 0.55); // 35-90%
           updateProgress(stepProgress, 'downloading_model');
@@ -173,7 +184,7 @@ class PhoWhisperService {
 
       localStorage.setItem('phowhisper-model-cached', 'true');
 
-      console.log('PhoWhisper model downloaded and initialized successfully');
+      console.log('Whisper model downloaded and initialized successfully');
 
     } catch (error) {
       console.error('Error downloading model:', error);
@@ -230,14 +241,14 @@ class PhoWhisperService {
     }
 
     try {
-      console.log('Loading PhoWhisper model from cache...');
+      console.log('Loading Whisper model from cache...');
 
       this.modelStatus.loadingStep = 'loading';
       this.modelStatus.progress = 50;
 
-      this.processor = await AutoProcessor.from_pretrained(PHOWHISPER_MODEL_ID);
+      this.processor = await AutoProcessor.from_pretrained(WHISPER_MODEL_ID);
 
-      this.model = await WhisperForConditionalGeneration.from_pretrained(PHOWHISPER_MODEL_ID);
+      this.model = await WhisperForConditionalGeneration.from_pretrained(WHISPER_MODEL_ID);
 
       this.modelStatus.loaded = true;
       this.modelStatus.progress = 100;
@@ -254,7 +265,7 @@ class PhoWhisperService {
   }
 
   /**
-   * Transcribe audio using PhoWhisper
+   * Transcribe audio using Whisper
    * @param audioData Float32Array of audio samples at 16kHz
    * @param language Optional language code (default: Vietnamese)
    * @returns Transcription result
@@ -401,7 +412,7 @@ class PhoWhisperService {
   }
 
   /**
-   * Check if the browser supports PhoWhisper
+   * Check if the browser supports Whisper
    */
   public static isSupported(): boolean {
     // Check for required Web APIs
