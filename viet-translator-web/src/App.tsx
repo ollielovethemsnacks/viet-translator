@@ -1,21 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import {
-  initWhisperService,
-  downloadWhisperModelAsync,
-  transcribeAudio,
-  translateVietnameseToEnglish,
-  getAvailableModelsList,
-  isIosBrowser,
-  type WhisperState,
-  type WhisperModel,
-  languageOptions,
-} from './lib/whisper';
-import { useSpeechRecognition } from './hooks/useSpeechRecognition';
+import { useState, useCallback } from 'react';
+import { isIosBrowser } from './lib/whisper';
+import { useTextToSpeech } from './hooks/useSpeechRecognition';
 import { useHybridSpeechRecognition } from './hooks/useHybridSpeechRecognition';
 import { translationService } from './services/translation';
 import { TranslationView } from './components/TranslationView';
 import { MicButton } from './components/MicButton';
 import { SettingsPanel } from './components/PhoWhisperSettings';
+import { useTranslationStore } from './stores/translationStore';
 
 function App() {
   // State
@@ -41,20 +32,6 @@ function App() {
     setLiveTranslation('');
   }, [addTranslation]);
 
-  // Web Speech API hook (for iOS and online mode)
-  const {
-    isListening: isWebListening,
-    interimTranscript: webInterimTranscript,
-    isSupported: isWebSupported,
-    error: webError,
-    startListening: startWebListening,
-    stopListening: stopWebListening
-  } = useSpeechRecognition({
-    language: 'vi-VN',
-    onResult: handleResult,
-    onInterim: handleInterim
-  });
-
   // Hybrid Speech Recognition hook (auto-detects platform)
   const {
     isListening: isHybridListening,
@@ -65,13 +42,12 @@ function App() {
     isSupported: isHybridSupported,
     error: hybridError,
     startListening: startHybridListening,
-    stopListening: stopHybridListening,
+    stopListening: stopHybridStopping,
     downloadModel,
     toggleOfflineMode: toggleHybridOfflineMode,
     isOfflineMode: isHybridOfflineMode,
     checkModelStatus,
     currentMode,
-    isIosBrowser: hybridIsIos
   } = useHybridSpeechRecognition({
     onResult: handleResult,
     onInterim: handleInterim
@@ -84,30 +60,21 @@ function App() {
   const isSupported = isHybridSupported;
 
   const startListening = useCallback(() => {
-    if (isIos) {
-      // iOS uses Web Speech API directly
-      startWebListening();
-    } else {
-      // Desktop uses hybrid mode
-      if (useOfflineMode) {
-        if (!isModelLoaded && !isModelDownloading) {
-          alert('Please download the Whisper model first');
-          return;
-        }
-        startHybridListening();
-      } else {
-        startHybridListening();
+    // Use hybrid mode which automatically detects platform
+    if (useOfflineMode) {
+      if (!isModelLoaded && !isModelDownloading) {
+        alert('Please download the Whisper model first');
+        return;
       }
+      startHybridListening();
+    } else {
+      startHybridListening();
     }
-  }, [isIos, useOfflineMode, isModelLoaded, isModelDownloading, startWebListening, startHybridListening]);
+  }, [useOfflineMode, isModelLoaded, isModelDownloading, startHybridListening]);
 
   const stopListening = useCallback(() => {
-    if (isIos) {
-      stopWebListening();
-    } else {
-      stopHybridListening();
-    }
-  }, [isIos, stopWebListening, stopHybridListening]);
+    stopHybridStopping();
+  }, [stopHybridStopping]);
 
   const handleSpeak = (text: string) => {
     speak(text);

@@ -94,7 +94,7 @@ export function useHybridSpeechRecognition(options: {
       setModelDownloadProgress(0);
       setError(null);
 
-      await phoWhisperService.downloadModel((progress, step) => {
+      await phoWhisperService.downloadModel((progress: number, step: string) => {
         setModelDownloadProgress(progress);
         console.log(`Download: ${step} - ${progress}%`);
       });
@@ -129,7 +129,7 @@ export function useHybridSpeechRecognition(options: {
 
     // Determine which mode to use
     const useOfflineMode = !isIos && (isOfflineMode || autoMode);
-    
+
     if (useOfflineMode) {
       // Check if model is ready for offline mode
       if (!isModelLoaded) {
@@ -287,7 +287,7 @@ export function useHybridSpeechRecognition(options: {
       setError(`Failed to stop: ${(err as Error).message}`);
       setIsListening(false);
     }
-  }, [isListening, onResult]);
+  }, [onResult]);
 
   // Toggle offline mode
   const toggleOfflineMode = useCallback((enable: boolean) => {
@@ -295,7 +295,7 @@ export function useHybridSpeechRecognition(options: {
       setError('Offline mode is not available on iOS browsers. Please use online mode.');
       return;
     }
-    
+
     setIsOfflineMode(enable);
     if (enable && !isModelLoaded) {
       setError('Please download the Whisper model first to use offline mode.');
