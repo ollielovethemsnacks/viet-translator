@@ -43,6 +43,7 @@ export function MicButton({
       onStopListening();
     } else {
       // On iOS, ensure we have proper user gesture context
+      // Web Speech API requires user gesture to start recognition on iOS
       onStartListening();
     }
   };
@@ -73,7 +74,7 @@ export function MicButton({
       </span>
       {isIOS && !isListening && (
         <p className="text-xs text-gray-500 mt-1 text-center">
-          Tap microphone to start speaking
+          Tap microphone to start speaking (requires internet)
         </p>
       )}
     </div>

@@ -14,57 +14,60 @@ function isIOS(): boolean {
   return isIosDevice || (isMacintosh && hasTouch);
 }
 
-interface SpeechRecognitionHook {
+interface WebSpeechRecognitionHook {
   isListening: boolean;
   transcript: string;
   isSupported: boolean;
   error: string | null;
   startListening: () => void;
   stopListening: () => void;
+  isIos: boolean;
 }
 
-export function useSpeechRecognition(options: {
+export function useWebSpeechRecognition(options: {
   language?: string;
   onResult?: (transcript: string) => void;
-} = {}): SpeechRecognitionHook {
-  const { language = 'vi-VN', onResult } = options;
+  onInterim?: (transcript: string) => void;
+} = {}): WebSpeechRecognitionHook {
+  const { language = 'vi-VN', onResult, onInterim } = options;
 
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(true);
+  const [isIos] = useState(isIOS());
 
   const recognitionRef = useRef<any>(null);
-  const isIOSRef = useRef<boolean>(false);
 
   useEffect(() => {
-    isIOSRef.current = isIOS();
-    
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       setIsSupported(false);
-      setError('Speech recognition not supported');
+      setError('Web Speech API not supported in this browser');
       return;
     }
 
     // Initialize recognition object
     const recognition = new SpeechRecognition();
-    recognition.continuous = false; // iOS doesn't support true continuous
+    recognition.continuous = true; // Enable continuous recognition
     recognition.interimResults = true;
     recognition.lang = language;
 
     recognition.onstart = () => {
       setIsListening(true);
       setError(null);
+      console.log('Speech recognition started');
     };
 
     recognition.onend = () => {
       setIsListening(false);
-      
-      // On iOS, restart recognition if we were listening continuously
+      console.log('Speech recognition ended');
+
+      // On iOS, sometimes we need to restart recognition manually after it stops
       // This handles cases where iOS stops recognition after a period
-      if (isIOSRef.current && isListening) {
+      if (isIos && recognitionRef.current) {
+        // Only restart if we were actively listening and the stop wasn't intentional
         setTimeout(() => {
           if (isListening && recognitionRef.current) {
             try {
@@ -79,20 +82,32 @@ export function useSpeechRecognition(options: {
 
     recognition.onerror = (event: any) => {
       if (event.error === 'aborted') return;
+
+      let errorMessage = event.error;
       
       // Handle iOS-specific errors
-      if (isIOSRef.current) {
-        if (event.error === 'no-speech' || event.error === 'audio-capture') {
-          // On iOS, sometimes we need to restart the recognition
-          setError(`Microphone access issue: ${event.error}`);
-        } else {
-          setError(event.error);
+      if (isIos) {
+        switch (event.error) {
+          case 'no-speech':
+            errorMessage = 'No speech detected. Please speak closer to the microphone.';
+            break;
+          case 'audio-capture':
+            errorMessage = 'Could not access microphone. Please check permissions.';
+            break;
+          case 'not-allowed':
+            errorMessage = 'Microphone access denied. Please allow microphone access in your browser settings.';
+            break;
+          case 'service-not-allowed':
+            errorMessage = 'Speech recognition service not allowed. Check your browser settings.';
+            break;
+          default:
+            errorMessage = `Microphone access issue: ${event.error}`;
         }
-      } else {
-        setError(event.error);
       }
-      
+
+      setError(errorMessage);
       setIsListening(false);
+      console.error('Speech recognition error:', event);
     };
 
     recognition.onresult = (event: any) => {
@@ -110,31 +125,43 @@ export function useSpeechRecognition(options: {
 
       if (finalTranscript) {
         setTranscript(finalTranscript);
+        
+        // Clear any previous error when we get a result
+        if (error) {
+          setError(null);
+        }
+        
         if (onResult) {
           onResult(finalTranscript);
         }
       } else if (interimTranscript) {
         // Update interim transcript for better UX
         setTranscript(interimTranscript);
+        
+        if (onInterim) {
+          onInterim(interimTranscript);
+        }
       }
     };
 
     recognitionRef.current = recognition;
-  }, [language, onResult]);
+
+    // Cleanup function
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [language, onResult, onInterim, isIos]);
 
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       try {
         // On iOS, ensure we have proper permissions and context
-        if (isIOSRef.current) {
-          // iOS requires user gesture to start recognition
-          // The calling component should ensure this is triggered by a user action
-          recognitionRef.current.start();
-        } else {
-          recognitionRef.current.start();
-        }
+        // The calling component should ensure this is triggered by a user action
+        recognitionRef.current.start();
       } catch (e) {
-        console.error('Failed to start:', e);
+        console.error('Failed to start speech recognition:', e);
         setError('Failed to start speech recognition: ' + (e as Error).message);
       }
     }
@@ -145,7 +172,7 @@ export function useSpeechRecognition(options: {
       try {
         recognitionRef.current.stop();
       } catch (e) {
-        // Ignore
+        // Ignore errors when stopping
         console.warn('Failed to stop recognition:', e);
       }
     }
@@ -158,40 +185,43 @@ export function useSpeechRecognition(options: {
     isSupported,
     error,
     startListening,
-    stopListening
+    stopListening,
+    isIos
   };
 }
 
+// Text-to-speech hook for speaking translations
 export function useTextToSpeech() {
-  const [isIOS, setIsIOS] = useState(false);
-
-  useEffect(() => {
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent));
-  }, []);
+  const [isIos] = useState(isIOS);
 
   const speak = useCallback((text: string) => {
-    if (!window.speechSynthesis) return;
+    if (!window.speechSynthesis) {
+      console.error('Speech synthesis not supported in this browser');
+      return;
+    }
 
-    // On iOS, we need to ensure the speech synthesis is properly initialized
-    if (isIOS) {
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    // Create utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Configure utterance properties
+    utterance.lang = 'en-US'; // English for translations
+    utterance.rate = isIos ? 0.9 : 1.0; // Slightly slower rate works better on iOS
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    // Handle iOS-specific issues
+    if (isIos) {
       // iOS sometimes requires a small delay after user interaction
       setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.9; // Slightly slower rate works better on iOS
-        utterance.pitch = 1.0;
-        
         window.speechSynthesis.speak(utterance);
       }, 10);
     } else {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      
       window.speechSynthesis.speak(utterance);
     }
-  }, [isIOS]);
+  }, [isIos]);
 
   return { speak };
 }

@@ -1,7 +1,5 @@
 import { useState, useCallback } from 'react';
-import { isIosBrowser } from './lib/whisper';
-import { useTextToSpeech } from './hooks/useSpeechRecognition';
-import { useHybridSpeechRecognition } from './hooks/useHybridSpeechRecognition';
+import { useWebSpeechRecognition, useTextToSpeech } from './hooks/useWebSpeechRecognition';
 import { translationService } from './services/translation';
 import { TranslationView } from './components/TranslationView';
 import { MicButton } from './components/MicButton';
@@ -12,69 +10,39 @@ function App() {
   // State
   const [view, setView] = useState<'main' | 'settings' | 'about'>('main');
   const [liveTranslation, setLiveTranslation] = useState('');
-  const [useOfflineMode, setUseOfflineMode] = useState(false);
   const { addTranslation } = useTranslationStore();
-  const { speak } = useTextToSpeech();
-
-  // Detect iOS browser
-  const isIos = isIosBrowser();
-
-  // Handle interim results for live translation
-  const handleInterim = useCallback((text: string) => {
-    const translation = translationService.translate(text);
-    setLiveTranslation(translation);
-  }, []);
-
-  // Handle final results
-  const handleResult = useCallback((text: string) => {
-    const translation = translationService.translate(text);
-    addTranslation(text, translation);
-    setLiveTranslation('');
-  }, [addTranslation]);
-
-  // Hybrid Speech Recognition hook (auto-detects platform)
+  
+  // Web Speech Recognition hook (primary method)
   const {
-    isListening: isHybridListening,
-    isModelLoaded,
-    isModelDownloading,
-    modelDownloadProgress,
-    interimTranscript: hybridInterimTranscript,
-    isSupported: isHybridSupported,
-    error: hybridError,
-    startListening: startHybridListening,
-    stopListening: stopHybridStopping,
-    downloadModel,
-    toggleOfflineMode: toggleHybridOfflineMode,
-    isOfflineMode: isHybridOfflineMode,
-    checkModelStatus,
-    currentMode,
-  } = useHybridSpeechRecognition({
-    onResult: handleResult,
-    onInterim: handleInterim
+    isListening,
+    transcript,
+    isSupported,
+    error,
+    startListening: startWebSpeechListening,
+    stopListening: stopWebSpeechListening,
+    isIos
+  } = useWebSpeechRecognition({
+    language: 'vi-VN', // Vietnamese language
+    onResult: useCallback((text: string) => {
+      const translation = translationService.translate(text);
+      addTranslation(text, translation);
+      setLiveTranslation('');
+    }, [addTranslation]),
+    onInterim: useCallback((text: string) => {
+      const translation = translationService.translate(text);
+      setLiveTranslation(translation);
+    }, [])
   });
 
-  // Determine which hook to use based on platform and mode
-  const isListening = isHybridListening;
-  const interimTranscript = hybridInterimTranscript;
-  const error = hybridError;
-  const isSupported = isHybridSupported;
+  const { speak } = useTextToSpeech();
 
   const startListening = useCallback(() => {
-    // Use hybrid mode which automatically detects platform
-    if (useOfflineMode) {
-      if (!isModelLoaded && !isModelDownloading) {
-        alert('Please download the Whisper model first');
-        return;
-      }
-      startHybridListening();
-    } else {
-      startHybridListening();
-    }
-  }, [useOfflineMode, isModelLoaded, isModelDownloading, startHybridListening]);
+    startWebSpeechListening();
+  }, [startWebSpeechListening]);
 
   const stopListening = useCallback(() => {
-    stopHybridStopping();
-  }, [stopHybridStopping]);
+    stopWebSpeechListening();
+  }, [stopWebSpeechListening]);
 
   const handleSpeak = (text: string) => {
     speak(text);
@@ -84,16 +52,13 @@ function App() {
     return (
       <SettingsPanel
         onClose={() => setView('main')}
-        isOfflineMode={isHybridOfflineMode}
-        toggleOfflineMode={(enable) => {
-          toggleHybridOfflineMode(enable);
-          setUseOfflineMode(enable);
-        }}
-        downloadModel={downloadModel}
-        isModelDownloading={isModelDownloading}
-        modelDownloadProgress={modelDownloadProgress}
-        isModelLoaded={isModelLoaded}
-        checkModelStatus={checkModelStatus}
+        isOfflineMode={false}
+        toggleOfflineMode={() => {}}
+        downloadModel={() => {}}
+        isModelDownloading={false}
+        modelDownloadProgress={0}
+        isModelLoaded={true}
+        checkModelStatus={async () => true}
       />
     );
   }
@@ -114,14 +79,14 @@ function App() {
             <ul className="text-sm text-gray-600 space-y-1">
               <li>• Tap the microphone to speak Vietnamese</li>
               <li>• See English translations instantly</li>
-              <li>• Works offline after model download (desktop)</li>
-              <li>• Uses Whisper (OpenAI, ONNX-converted)</li>
+              <li>• Uses Web Speech API for real-time recognition</li>
+              <li>• Works on iOS Safari and all modern browsers</li>
               <li>• 100+ common Vietnamese words</li>
             </ul>
             {isIos && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
                 <p className="text-xs text-blue-800">
-                  <strong>iOS Note:</strong> This app uses Web Speech API on iOS since offline Whisper is not supported. You need an internet connection for transcription.
+                  <strong>iOS Note:</strong> This app uses Web Speech API which works on iOS Safari. Internet connection required for transcription.
                 </p>
               </div>
             )}
@@ -145,7 +110,7 @@ function App() {
           {isListening && (
             <div className="flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-              {isIos ? 'ONLINE' : currentMode === 'offline' ? 'OFFLINE' : 'AUTO'}
+              {isIos ? 'WEB SPEECH' : 'LISTENING'}
             </div>
           )}
           <button
@@ -171,14 +136,14 @@ function App() {
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
             <span className="text-xs font-medium text-blue-600 uppercase tracking-wide">
-              {isIos ? 'Live Translation (Online)' : currentMode === 'offline' ? 'Offline Transcription' : 'Live Transcription'}
+              {isIos ? 'Live Translation (Web Speech API)' : 'Live Translation'}
             </span>
           </div>
 
           {/* Original Vietnamese */}
-          {interimTranscript && (
+          {transcript && (
             <p className="text-sm text-blue-800 mb-1">
-              <span className="opacity-60">Hearing:</span> {interimTranscript}
+              <span className="opacity-60">Hearing:</span> {transcript}
             </p>
           )}
 
@@ -208,30 +173,12 @@ function App() {
         />
         {isIos && !isListening && (
           <p className="text-center text-xs text-blue-600 mt-2">
-            Online mode: Uses Web Speech API (requires internet)
+            Uses Web Speech API (requires internet connection)
           </p>
         )}
-        {!isIos && !isModelLoaded && !isModelDownloading && useOfflineMode && (
-          <p className="text-center text-xs text-red-500 mt-2">
-            Model not downloaded. Go to settings to download for offline mode.
-          </p>
-        )}
-        {!isIos && isModelDownloading && (
-          <div className="mt-2">
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
-              <div
-                className="bg-blue-500 h-1.5 rounded-full"
-                style={{ width: `${modelDownloadProgress}%` }}
-              ></div>
-            </div>
-            <p className="text-center text-xs text-gray-500 mt-1">
-              Downloading model... {modelDownloadProgress}%
-            </p>
-          </div>
-        )}
-        {!isIos && useOfflineMode && isModelLoaded && (
-          <p className="text-center text-xs text-green-600 mt-2">
-            Offline mode active: No internet required
+        {!isIos && !isListening && (
+          <p className="text-center text-xs text-blue-600 mt-2">
+            Uses Web Speech API for speech recognition
           </p>
         )}
       </div>

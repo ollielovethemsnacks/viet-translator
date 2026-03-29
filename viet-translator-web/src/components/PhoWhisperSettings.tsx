@@ -10,14 +10,7 @@ interface SettingsPanelProps {
 }
 
 export function SettingsPanel({
-  onClose,
-  isOfflineMode,
-  toggleOfflineMode,
-  downloadModel,
-  isModelDownloading,
-  modelDownloadProgress,
-  isModelLoaded,
-  checkModelStatus
+  onClose
 }: SettingsPanelProps) {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -26,58 +19,39 @@ export function SettingsPanel({
           <h1 className="text-2xl font-bold">Settings</h1>
           <button onClick={onClose} className="text-blue-500">Back</button>
         </div>
-        
+
         <div className="bg-white rounded-lg p-4 shadow space-y-4">
           <div>
-            <h3 className="font-semibold mb-2">Speech Recognition Mode</h3>
-            <div className="flex items-center gap-2 mb-2">
-              <input
-                type="checkbox"
-                id="offline-mode"
-                checked={isOfflineMode}
-                onChange={(e) => toggleOfflineMode(e.target.checked)}
-                disabled={isModelDownloading}
-                className="rounded"
-              />
-              <label htmlFor="offline-mode" className="text-sm">
-                Use Offline Mode (requires model download)
-              </label>
-            </div>
-            
-            <div className="p-3 rounded bg-gray-50 border border-gray-200">
-              <p className="text-xs text-gray-700">
-                <strong>Tip:</strong> Offline mode works without internet after model download. 
-                Online mode requires internet but works immediately.
+            <h3 className="font-semibold mb-2">Speech Recognition</h3>
+            <div className="p-3 rounded bg-blue-50 border border-blue-200">
+              <p className="text-sm text-blue-700">
+                This app uses the Web Speech API for speech recognition.
+                No model download required - works immediately in supported browsers.
               </p>
             </div>
           </div>
-          
+
           <div>
-            <h3 className="font-semibold mb-2">Model Status</h3>
+            <h3 className="font-semibold mb-2">Language</h3>
             <div className="p-3 rounded bg-gray-50 border border-gray-200">
               <p className="text-sm">
-                Status: {isModelDownloading 
-                  ? `Downloading... ${Math.round(modelDownloadProgress)}%` 
-                  : isModelLoaded 
-                    ? 'Downloaded (ready for offline use)' 
-                    : 'Not downloaded'}
+                Recognizing: Vietnamese (vi-VN)
               </p>
-              
-              {!isModelLoaded && !isModelDownloading && (
-                <button
-                  onClick={downloadModel}
-                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600"
-                >
-                  Download Whisper Model
-                </button>
-              )}
-              
-              <button
-                onClick={checkModelStatus}
-                className="mt-2 ml-2 bg-gray-200 text-gray-800 px-4 py-2 rounded text-sm hover:bg-gray-300"
-              >
-                Refresh Status
-              </button>
+              <p className="text-xs text-gray-600 mt-1">
+                Translating to: English
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-2">Browser Compatibility</h3>
+            <div className="p-3 rounded bg-gray-50 border border-gray-200">
+              <p className="text-sm">
+                Works on: Chrome, Firefox, Edge, Safari (iOS/macOS)
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                Note: Requires internet connection for speech recognition
+              </p>
             </div>
           </div>
         </div>
