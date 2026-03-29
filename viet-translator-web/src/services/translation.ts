@@ -16,10 +16,48 @@ export class TranslationService {
   }
 
   /**
+   * Remove Vietnamese tone marks for fuzzy matching
+   */
+  private removeTones(text: string): string {
+    const toneMap: Record<string, string> = {
+      'á': 'a', 'à': 'a', 'ả': 'a', 'ã': 'a', 'ạ': 'a',
+      'ă': 'a', 'ắ': 'a', 'ằ': 'a', 'ẳ': 'a', 'ẵ': 'a', 'ặ': 'a',
+      'â': 'a', 'ấ': 'a', 'ầ': 'a', 'ẩ': 'a', 'ẫ': 'a', 'ậ': 'a',
+      'é': 'e', 'è': 'e', 'ẻ': 'e', 'ẽ': 'e', 'ẹ': 'e',
+      'ê': 'e', 'ế': 'e', 'ề': 'e', 'ể': 'e', 'ễ': 'e', 'ệ': 'e',
+      'í': 'i', 'ì': 'i', 'ỉ': 'i', 'ĩ': 'i', 'ị': 'i',
+      'ó': 'o', 'ò': 'o', 'ỏ': 'o', 'õ': 'o', 'ọ': 'o',
+      'ô': 'o', 'ố': 'o', 'ồ': 'o', 'ổ': 'o', 'ỗ': 'o', 'ộ': 'o',
+      'ơ': 'o', 'ớ': 'o', 'ờ': 'o', 'ở': 'o', 'ỡ': 'o', 'ợ': 'o',
+      'ú': 'u', 'ù': 'u', 'ủ': 'u', 'ũ': 'u', 'ụ': 'u',
+      'ư': 'u', 'ứ': 'u', 'ừ': 'u', 'ử': 'u', 'ữ': 'u', 'ự': 'u',
+      'ý': 'y', 'ỳ': 'y', 'ỷ': 'y', 'ỹ': 'y', 'ỵ': 'y',
+      'đ': 'd',
+      'Á': 'A', 'À': 'A', 'Ả': 'A', 'Ã': 'A', 'Ạ': 'A',
+      'Ă': 'A', 'Ắ': 'A', 'Ằ': 'A', 'Ẳ': 'A', 'Ẵ': 'A', 'Ặ': 'A',
+      'Â': 'A', 'Ấ': 'A', 'Ầ': 'A', 'Ẩ': 'A', 'Ẫ': 'A', 'Ậ': 'A',
+      'É': 'E', 'È': 'E', 'Ẻ': 'E', 'Ẽ': 'E', 'Ẹ': 'E',
+      'Ê': 'E', 'Ế': 'E', 'Ề': 'E', 'Ể': 'E', 'Ễ': 'E', 'Ệ': 'E',
+      'Í': 'I', 'Ì': 'I', 'Ỉ': 'I', 'Ĩ': 'I', 'Ị': 'I',
+      'Ó': 'O', 'Ò': 'O', 'Ỏ': 'O', 'Õ': 'O', 'Ọ': 'O',
+      'Ô': 'O', 'Ố': 'O', 'Ồ': 'O', 'Ổ': 'O', 'Ỗ': 'O', 'Ộ': 'O',
+      'Ơ': 'O', 'Ớ': 'O', 'Ờ': 'O', 'Ở': 'O', 'Ỡ': 'O', 'Ợ': 'O',
+      'Ú': 'U', 'Ù': 'U', 'Ủ': 'U', 'Ũ': 'U', 'Ụ': 'U',
+      'Ư': 'U', 'Ứ': 'U', 'Ừ': 'U', 'Ử': 'U', 'Ữ': 'U', 'Ự': 'U',
+      'Ý': 'Y', 'Ỳ': 'Y', 'Ỷ': 'Y', 'Ỹ': 'Y', 'Ỵ': 'Y',
+      'Đ': 'D'
+    };
+    
+    return text.replace(/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]/g, 
+      char => toneMap[char] || char);
+  }
+
+  /**
    * Find translation for a word or phrase
    */
   findTranslation(text: string): string | null {
     const normalizedText = text.trim().toLowerCase();
+    const tonelessText = this.removeTones(normalizedText);
 
     if (!normalizedText) return null;
 
@@ -27,16 +65,24 @@ export class TranslationService {
     const exactMatch = this.dictionary.find(entry => entry.vi === normalizedText);
     if (exactMatch) return exactMatch.en;
 
-    // Check if the text contains any dictionary entries
-    for (const entry of this.dictionary) {
-      if (normalizedText.includes(entry.vi)) {
+    // Try toneless match
+    const tonelessMatch = this.dictionary.find(entry => 
+      this.removeTones(entry.vi) === tonelessText
+    );
+    if (tonelessMatch) return tonelessMatch.en;
+
+    // Check if the text contains any dictionary entries (prioritize longer matches)
+    const sortedDict = [...this.dictionary].sort((a, b) => b.vi.length - a.vi.length);
+    for (const entry of sortedDict) {
+      const tonelessEntry = this.removeTones(entry.vi);
+      if (normalizedText.includes(entry.vi) || tonelessText.includes(tonelessEntry)) {
         return entry.en;
       }
     }
 
     // Try reversing - check if any dictionary entry is contained in the text
-    for (const entry of this.dictionary) {
-      if (entry.vi.includes(normalizedText)) {
+    for (const entry of sortedDict) {
+      if (entry.vi.includes(normalizedText) || this.removeTones(entry.vi).includes(tonelessText)) {
         return entry.en;
       }
     }
@@ -45,19 +91,34 @@ export class TranslationService {
   }
 
   /**
-   * Find supporting words in the text that have translations
+   * Find all matching words in the text that have translations
    */
   supportingWords(text: string): Array<{ word: string; translation: string }> {
-    const words: Array<{ word: string; translation: string }> = [];
+    const matches: Array<{ word: string; translation: string }> = [];
     const normalizedText = text.toLowerCase();
 
-    for (const entry of this.dictionary) {
-      if (normalizedText.includes(entry.vi.toLowerCase())) {
-        words.push({ word: entry.vi, translation: entry.en });
+    // Sort by length to prioritize longer matches
+    const sortedDict = [...this.dictionary].sort((a, b) => b.vi.length - a.vi.length);
+    
+    let remainingText = normalizedText;
+    
+    for (const entry of sortedDict) {
+      const tonelessEntry = this.removeTones(entry.vi);
+      const tonelessRemaining = this.removeTones(remainingText);
+      if (remainingText.includes(entry.vi) || tonelessRemaining.includes(tonelessEntry)) {
+        // Only add if not already covered by a longer match
+        const alreadyCovered = matches.some(m => 
+          m.word.includes(entry.vi) || entry.vi.includes(m.word)
+        );
+        if (!alreadyCovered) {
+          matches.push({ word: entry.vi, translation: entry.en });
+          // Remove matched portion to avoid duplicate matches
+          remainingText = remainingText.replace(entry.vi, '');
+        }
       }
     }
 
-    return words;
+    return matches;
   }
 
   /**
@@ -77,15 +138,15 @@ export class TranslationService {
     const matches = this.supportingWords(cleanedText);
 
     if (matches.length > 0) {
-      // Return the longest match
-      const longestMatch = matches.reduce((a, b) =>
-        a.word.length > b.word.length ? a : b
-      );
-      return longestMatch.translation;
+      // Combine all matches into a phrase translation
+      if (matches.length === 1) {
+        return matches[0].translation;
+      }
+      // Multiple matches - combine them
+      return matches.map(m => m.translation).join(' + ');
     }
 
-    // No translation found, return empty string
-    // In a real app, we might indicate this with a placeholder
+    // No translation found
     return '[Not found]';
   }
 }
