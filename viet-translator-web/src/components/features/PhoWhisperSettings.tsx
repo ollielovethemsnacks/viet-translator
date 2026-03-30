@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface SettingsPanelProps {
   onClose: () => void;
   isOfflineMode: boolean;
@@ -9,15 +11,13 @@ interface SettingsPanelProps {
   checkModelStatus: () => void;
 }
 
-export function SettingsPanel({
-  onClose
-}: SettingsPanelProps) {
+export const SettingsPanel = React.memo(({ onClose }: SettingsPanelProps) => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Settings</h1>
-          <button onClick={onClose} className="text-blue-500">Back</button>
+          <button onClick={onClose} className="text-blue-500" aria-label="Close settings">Back</button>
         </div>
 
         <div className="bg-white rounded-lg p-4 shadow space-y-4">
@@ -58,4 +58,6 @@ export function SettingsPanel({
       </div>
     </div>
   );
-}
+});
+
+SettingsPanel.displayName = 'SettingsPanel';

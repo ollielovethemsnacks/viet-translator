@@ -8,7 +8,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'vâng', en: 'yes', category: 'greetings' },
   { vi: 'không', en: 'no', category: 'greetings' },
   { vi: 'ừ', en: 'uh huh', category: 'greetings' },
-  
+
   // Family members
   { vi: 'ba', en: 'dad', category: 'family' },
   { vi: 'bố', en: 'dad', category: 'family' },
@@ -26,7 +26,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'bà ngoại', en: 'maternal grandmother', category: 'family' },
   { vi: 'con', en: 'child', category: 'family' },
   { vi: 'cháu', en: 'grandchild/nephew/niece', category: 'family' },
-  
+
   // Common expressions
   { vi: 'con khỏe không', en: 'are you healthy?', category: 'expressions' },
   { vi: 'con khỏe', en: 'I am healthy', category: 'expressions' },
@@ -42,7 +42,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'con khát', en: 'I am thirsty', category: 'expressions' },
   { vi: 'con đau đầu', en: 'I have a headache', category: 'expressions' },
   { vi: 'con mệt', en: 'I am tired', category: 'expressions' },
-  
+
   // Time and days
   { vi: 'buổi sáng', en: 'morning', category: 'time' },
   { vi: 'buổi trưa', en: 'noon', category: 'time' },
@@ -59,7 +59,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'hôm nay', en: 'today', category: 'time' },
   { vi: 'ngày mai', en: 'tomorrow', category: 'time' },
   { vi: 'hôm qua', en: 'yesterday', category: 'time' },
-  
+
   // Numbers
   { vi: 'một', en: 'one', category: 'numbers' },
   { vi: 'hai', en: 'two', category: 'numbers' },
@@ -86,7 +86,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'năm mươi', en: 'fifty', category: 'numbers' },
   { vi: 'trăm', en: 'hundred', category: 'numbers' },
   { vi: 'ngàn', en: 'thousand', category: 'numbers' },
-  
+
   // Food and drinks
   { vi: 'cơm', en: 'rice', category: 'food' },
   { vi: 'nước', en: 'water', category: 'food' },
@@ -98,7 +98,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'bánh mì', en: 'bread', category: 'food' },
   { vi: 'trứng', en: 'eggs', category: 'food' },
   { vi: 'sữa', en: 'milk', category: 'food' },
-  
+
   // Actions
   { vi: 'đi', en: 'go', category: 'actions' },
   { vi: 'đứng', en: 'stand', category: 'actions' },
@@ -115,7 +115,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'nói', en: 'speak', category: 'actions' },
   { vi: 'viết', en: 'write', category: 'actions' },
   { vi: 'đọc', en: 'read', category: 'actions' },
-  
+
   // Places
   { vi: 'nhà', en: 'house/home', category: 'places' },
   { vi: 'trường học', en: 'school', category: 'places' },
@@ -125,7 +125,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'công viên', en: 'park', category: 'places' },
   { vi: 'sân bay', en: 'airport', category: 'places' },
   { vi: 'ga xe lửa', en: 'train station', category: 'places' },
-  
+
   // Body parts
   { vi: 'đầu', en: 'head', category: 'body' },
   { vi: 'mắt', en: 'eye', category: 'body' },
@@ -136,7 +136,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'chân', en: 'leg/foot', category: 'body' },
   { vi: 'tim', en: 'heart', category: 'body' },
   { vi: 'bụng', en: 'stomach', category: 'body' },
-  
+
   // Colors
   { vi: 'đỏ', en: 'red', category: 'colors' },
   { vi: 'xanh', en: 'blue/green', category: 'colors' },
@@ -147,7 +147,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'tím', en: 'purple', category: 'colors' },
   { vi: 'cam', en: 'orange', category: 'colors' },
   { vi: 'hồng', en: 'pink', category: 'colors' },
-  
+
   // Emotions
   { vi: 'vui', en: 'happy', category: 'emotions' },
   { vi: 'buồn', en: 'sad', category: 'emotions' },
@@ -156,7 +156,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'sợ', en: 'scared', category: 'emotions' },
   { vi: 'yêu', en: 'love', category: 'emotions' },
   { vi: 'thương', en: 'love/care', category: 'emotions' },
-  
+
   // Common adjectives (expanded)
   { vi: 'xấu', en: 'ugly/bad', category: 'adjectives' },
   { vi: 'đẹp', en: 'beautiful', category: 'adjectives' },
@@ -189,7 +189,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'dễ', en: 'easy', category: 'adjectives' },
   { vi: 'ngon', en: 'delicious', category: 'adjectives' },
   { vi: 'dở', en: 'tasteless', category: 'adjectives' },
-  
+
   // Common question words and phrases
   { vi: 'sao', en: 'why/how', category: 'questions' },
   { vi: 'bài', en: 'lesson/article', category: 'common' },
@@ -198,7 +198,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'như thế nào', en: 'how is it', category: 'questions' },
   { vi: 'có', en: 'have/there is', category: 'common' },
   { vi: 'không có', en: 'don\'t have', category: 'common' },
-  
+
   // Common verbs (expanded)
   { vi: 'muốn', en: 'want', category: 'actions' },
   { vi: 'cần', en: 'need', category: 'actions' },
@@ -216,7 +216,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'đang', en: 'currently (doing)', category: 'common' },
   { vi: 'sẽ', en: 'will', category: 'common' },
   { vi: 'đã', en: 'already/past', category: 'common' },
-  
+
   // Common nouns
   { vi: 'việc', en: 'work/task', category: 'common' },
   { vi: 'chuyện', en: 'story/matter', category: 'common' },
@@ -230,7 +230,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'thầy', en: 'teacher (male)', category: 'common' },
   { vi: 'cô', en: 'teacher (female)', category: 'common' },
   { vi: 'bác', en: 'doctor/uncle/aunt', category: 'common' },
-  
+
   // Weather and nature
   { vi: 'trời', en: 'sky/weather', category: 'nature' },
   { vi: 'mưa', en: 'rain', category: 'nature' },
@@ -239,7 +239,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'biển', en: 'sea/ocean', category: 'nature' },
   { vi: 'sông', en: 'river', category: 'nature' },
   { vi: 'núi', en: 'mountain', category: 'nature' },
-  
+
   // Common expressions (expanded)
   { vi: 'xấu nhiều cực', en: 'very ugly/bad', category: 'expressions' },
   { vi: 'rất', en: 'very', category: 'common' },
@@ -252,7 +252,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'ơ', en: '(response particle)', category: 'common' },
   { vi: 'ừ', en: 'yes/okay', category: 'greetings' },
   { vi: 'à', en: '(emphasis particle)', category: 'common' },
-  
+
   // Questions
   { vi: 'gì', en: 'what', category: 'questions' },
   { vi: 'ai', en: 'who', category: 'questions' },
@@ -260,7 +260,7 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'khi nào', en: 'when', category: 'questions' },
   { vi: 'tại sao', en: 'why', category: 'questions' },
   { vi: 'thế nào', en: 'how', category: 'questions' },
-  
+
   // Additional common phrases
   { vi: 'được rồi', en: 'okay/all right', category: 'expressions' },
   { vi: 'xin cảm ơn', en: 'thank you very much', category: 'expressions' },
@@ -270,4 +270,257 @@ export const fullDictionary: Array<{ vi: string; en: string; category: string }>
   { vi: 'sinh nhật vui vẻ', en: 'happy birthday', category: 'expressions' },
   { vi: 'chúc ngủ ngon', en: 'sweet dreams', category: 'expressions' },
   { vi: 'chúc may mắn', en: 'good luck', category: 'expressions' },
+
+  // Vietnamese dishes and foods
+  { vi: 'phở', en: 'Vietnamese noodle soup', category: 'food' },
+  { vi: 'bánh cuốn', en: 'steamed rice rolls', category: 'food' },
+  { vi: 'chả giò', en: 'spring rolls', category: 'food' },
+  { vi: 'bún chả', en: 'grilled pork with noodles', category: 'food' },
+  { vi: 'bánh mì', en: 'Vietnamese sandwich', category: 'food' },
+  { vi: 'gỏi cuốn', en: 'fresh spring rolls', category: 'food' },
+  { vi: 'bánh xèo', en: 'Vietnamese crepe', category: 'food' },
+  { vi: 'cơm tấm', en: 'broken rice', category: 'food' },
+  { vi: 'hủ tiếu', en: 'rice noodle soup', category: 'food' },
+  { vi: 'bún riêu', en: 'crab noodle soup', category: 'food' },
+  { vi: 'canh', en: 'soup', category: 'food' },
+  { vi: 'món chính', en: 'main dish', category: 'food' },
+  { vi: 'món phụ', en: 'side dish', category: 'food' },
+  { vi: 'món khai vị', en: 'appetizer', category: 'food' },
+  { vi: 'món tráng miệng', en: 'dessert', category: 'food' },
+  { vi: 'thịt heo', en: 'pork', category: 'food' },
+  { vi: 'thịt bò', en: 'beef', category: 'food' },
+  { vi: 'thịt gà', en: 'chicken', category: 'food' },
+  { vi: 'cá', en: 'fish', category: 'food' },
+  { vi: 'tôm', en: 'shrimp', category: 'food' },
+  { vi: 'mực', en: 'squid', category: 'food' },
+  { vi: 'trà', en: 'tea', category: 'food' },
+  { vi: 'cà phê', en: 'coffee', category: 'food' },
+  { vi: 'nước ngọt', en: 'soft drink', category: 'food' },
+  { vi: 'nước mía', en: 'sugarcane juice', category: 'food' },
+  { vi: 'sinh tố', en: 'smoothie', category: 'food' },
+  { vi: 'chè', en: 'sweet dessert soup', category: 'food' },
+  { vi: 'xôi', en: 'sticky rice', category: 'food' },
+  { vi: 'bánh chưng', en: 'sticky rice cake', category: 'food' },
+  { vi: 'bánh tét', en: 'cylindrical sticky rice cake', category: 'food' },
+  { vi: 'rau muống', en: 'water spinach', category: 'food' },
+  { vi: 'rau cải', en: 'leafy greens', category: 'food' },
+  { vi: 'rau thơm', en: 'herbs', category: 'food' },
+  { vi: 'rau sống', en: 'raw vegetables', category: 'food' },
+  { vi: 'đậu hũ', en: 'tofu', category: 'food' },
+  { vi: 'đậu phộng', en: 'peanuts', category: 'food' },
+  { vi: 'hành', en: 'onion/scallion', category: 'food' },
+  { vi: 'tỏi', en: 'garlic', category: 'food' },
+  { vi: 'ớt', en: 'chili pepper', category: 'food' },
+  { vi: 'chanh', en: 'lime', category: 'food' },
+  { vi: 'dừa', en: 'coconut', category: 'food' },
+  { vi: 'xoài', en: 'mango', category: 'food' },
+  { vi: 'dứa', en: 'pineapple', category: 'food' },
+  { vi: 'ổi', en: 'guava', category: 'food' },
+  { vi: 'sầu riêng', en: 'durian', category: 'food' },
+  { vi: 'mít', en: 'jackfruit', category: 'food' },
+  { vi: 'chuối', en: 'banana', category: 'food' },
+  { vi: 'dưa hấu', en: 'watermelon', category: 'food' },
+  { vi: 'cam', en: 'orange', category: 'food' },
+  { vi: 'bưởi', en: 'pomelo', category: 'food' },
+  { vi: 'chanh dây', en: 'passion fruit', category: 'food' },
+
+  // Cooking methods
+  { vi: 'chiên', en: 'fry', category: 'cooking' },
+  { vi: 'rán', en: 'pan-fry', category: 'cooking' },
+  { vi: 'luộc', en: 'boil', category: 'cooking' },
+  { vi: 'hấp', en: 'steam', category: 'cooking' },
+  { vi: 'nướng', en: 'grill/bake', category: 'cooking' },
+  { vi: 'xào', en: 'stir-fry', category: 'cooking' },
+  { vi: 'kho', en: 'braise', category: 'cooking' },
+  { vi: 'rim', en: 'simmer', category: 'cooking' },
+  { vi: 'nấu', en: 'cook', category: 'cooking' },
+  { vi: 'trộn', en: 'mix', category: 'cooking' },
+  { vi: 'ướp', en: 'marinate', category: 'cooking' },
+  { vi: 'cắt', en: 'cut', category: 'cooking' },
+  { vi: 'băm', en: 'chop/mince', category: 'cooking' },
+  { vi: 'thái', en: 'slice', category: 'cooking' },
+  { vi: 'gọt', en: 'peel', category: 'cooking' },
+  { vi: 'rửa', en: 'wash', category: 'cooking' },
+  { vi: 'nêm', en: 'season', category: 'cooking' },
+  { vi: 'nếm', en: 'taste', category: 'cooking' },
+  { vi: 'bày', en: 'serve', category: 'cooking' },
+  { vi: 'dọn', en: 'set the table', category: 'cooking' },
+  { vi: 'nấu ăn', en: 'cooking', category: 'cooking' },
+  { vi: 'đun', en: 'heat', category: 'cooking' },
+  { vi: 'sôi', en: 'boil', category: 'cooking' },
+  { vi: 'chín', en: 'cooked', category: 'cooking' },
+  { vi: 'cháy', en: 'burnt', category: 'cooking' },
+  { vi: 'ngập', en: 'overcooked', category: 'cooking' },
+  { vi: 'sốt', en: 'sauce', category: 'cooking' },
+  { vi: 'gia vị', en: 'seasoning', category: 'cooking' },
+  { vi: 'nước mắm', en: 'fish sauce', category: 'cooking' },
+  { vi: 'muối', en: 'salt', category: 'cooking' },
+  { vi: 'đường', en: 'sugar', category: 'cooking' },
+  { vi: 'tiêu', en: 'pepper', category: 'cooking' },
+  { vi: 'dầu', en: 'oil', category: 'cooking' },
+  { vi: 'bếp', en: 'kitchen stove', category: 'cooking' },
+  { vi: 'nồi', en: 'pot', category: 'cooking' },
+  { vi: 'chảo', en: 'pan', category: 'cooking' },
+  { vi: 'dao', en: 'knife', category: 'cooking' },
+  { vi: 'thớt', en: 'cutting board', category: 'cooking' },
+  { vi: 'muỗng', en: 'spoon', category: 'cooking' },
+  { vi: 'dĩa', en: 'fork', category: 'cooking' },
+  { vi: 'chén', en: 'bowl', category: 'cooking' },
+  { vi: 'ly', en: 'glass', category: 'cooking' },
+  { vi: 'đũa', en: 'chopsticks', category: 'cooking' },
+  { vi: 'mâm', en: 'tray/round dining mat', category: 'cooking' },
+
+  // Dinner table expressions
+  { vi: 'mời ăn', en: 'please eat', category: 'expressions' },
+  { vi: 'ngon quá', en: 'so delicious', category: 'expressions' },
+  { vi: 'ngon lắm', en: 'very delicious', category: 'expressions' },
+  { vi: 'ăn thêm', en: 'eat more', category: 'expressions' },
+  { vi: 'đừng ăn nữa', en: 'stop eating', category: 'expressions' },
+  { vi: 'đợi chút', en: 'wait a moment', category: 'expressions' },
+  { vi: 'xong rồi', en: 'it\'s done', category: 'expressions' },
+  { vi: 'chậm thôi', en: 'slow down', category: 'expressions' },
+  { vi: 'từ từ', en: 'take your time', category: 'expressions' },
+  { vi: 'cẩn thận', en: 'be careful', category: 'expressions' },
+  { vi: 'hết rồi', en: 'it\'s finished', category: 'expressions' },
+  { vi: 'còn lại', en: 'leftover', category: 'expressions' },
+  { vi: 'giữ bụng đói', en: 'save room for food', category: 'expressions' },
+  { vi: 'đầy bụng', en: 'full stomach', category: 'expressions' },
+  { vi: 'no quá', en: 'too full', category: 'expressions' },
+  { vi: 'đói bụng', en: 'hungry', category: 'expressions' },
+  { vi: 'khát nước', en: 'thirsty', category: 'expressions' },
+  { vi: 'rót nước', en: 'pour water', category: 'expressions' },
+  { vi: 'rót trà', en: 'pour tea', category: 'expressions' },
+  { vi: 'chén cơm', en: 'bowl of rice', category: 'expressions' },
+  { vi: 'muỗng canh', en: 'soup spoon', category: 'expressions' },
+  { vi: 'dọn dẹp', en: 'clean up', category: 'expressions' },
+  { vi: 'rửa chén', en: 'wash dishes', category: 'expressions' },
+  { vi: 'bát đũa', en: 'bowls and chopsticks', category: 'expressions' },
+  { vi: 'món này', en: 'this dish', category: 'expressions' },
+  { vi: 'món kia', en: 'that dish', category: 'expressions' },
+  { vi: 'nhiều quá', en: 'too much', category: 'expressions' },
+  { vi: 'ít quá', en: 'too little', category: 'expressions' },
+  { vi: 'vừa đủ', en: 'just right', category: 'expressions' },
+  { vi: 'hơi mặn', en: 'a bit salty', category: 'expressions' },
+  { vi: 'hơi nhạt', en: 'a bit bland', category: 'expressions' },
+  { vi: 'hơi cay', en: 'a bit spicy', category: 'expressions' },
+  { vi: 'hơi ngọt', en: 'a bit sweet', category: 'expressions' },
+  { vi: 'hơi chua', en: 'a bit sour', category: 'expressions' },
+  { vi: 'hơi đắng', en: 'a bit bitter', category: 'expressions' },
+  { vi: 'hơi béo', en: 'a bit fatty', category: 'expressions' },
+  { vi: 'hơi tanh', en: 'a bit fishy', category: 'expressions' },
+  { vi: 'hơi cháy', en: 'a bit burnt', category: 'expressions' },
+  { vi: 'hơi sống', en: 'a bit raw', category: 'expressions' },
+  { vi: 'hơi chín', en: 'a bit cooked', category: 'expressions' },
+  { vi: 'hơi mềm', en: 'a bit soft', category: 'expressions' },
+  { vi: 'hơi cứng', en: 'a bit hard', category: 'expressions' },
+  { vi: 'hơi dai', en: 'a bit chewy', category: 'expressions' },
+  { vi: 'hơi bùi', en: 'a bit nutty', category: 'expressions' },
+  { vi: 'hơi thơm', en: 'a bit fragrant', category: 'expressions' },
+  { vi: 'hơi lạ', en: 'a bit strange', category: 'expressions' },
+  { vi: 'hơi quen', en: 'a bit familiar', category: 'expressions' },
+  { vi: 'hơi quen', en: 'a bit familiar', category: 'expressions' },
+
+  // Politeness markers
+  { vi: 'dạ', en: 'yes/formal response', category: 'politeness' },
+  { vi: 'vâng', en: 'yes/respectful response', category: 'politeness' },
+  { vi: 'vâng dạ', en: 'yes sir/madam', category: 'politeness' },
+  { vi: 'thưa', en: 'with respect (used when addressing elders)', category: 'politeness' },
+  { vi: 'xin lỗi', en: 'excuse me/sorry', category: 'politeness' },
+  { vi: 'xin phép', en: 'may I be excused', category: 'politeness' },
+  { vi: 'cho em hỏi', en: 'excuse me, may I ask', category: 'politeness' },
+  { vi: 'cho tôi hỏi', en: 'excuse me, may I ask', category: 'politeness' },
+  { vi: 'làm ơn', en: 'please', category: 'politeness' },
+  { vi: 'làm ơn giúp', en: 'please help', category: 'politeness' },
+  { vi: 'cảm ơn nhiều', en: 'thank you very much', category: 'politeness' },
+  { vi: 'rất cảm kích', en: 'much appreciated', category: 'politeness' },
+  { vi: 'xin cảm ơn', en: 'I thank you', category: 'politeness' },
+  { vi: 'xin chân thành cảm ơn', en: 'sincerely thank you', category: 'politeness' },
+  
+  // Common conversation phrases - Work
+  { vi: 'tôi đang làm việc', en: 'I am working', category: 'conversation-work' },
+  { vi: 'tôi đang bận', en: 'I am busy', category: 'conversation-work' },
+  { vi: 'tôi rảnh', en: 'I am free', category: 'conversation-work' },
+  { vi: 'công việc của tôi', en: 'my job/work', category: 'conversation-work' },
+  { vi: 'công ty', en: 'company', category: 'conversation-work' },
+  { vi: 'đồng nghiệp', en: 'colleague', category: 'conversation-work' },
+  { vi: 'sếp', en: 'boss', category: 'conversation-work' },
+  { vi: 'hợp đồng', en: 'contract', category: 'conversation-work' },
+  { vi: 'lương', en: 'salary', category: 'conversation-work' },
+  { vi: 'trả lương', en: 'pay salary', category: 'conversation-work' },
+  { vi: 'nghỉ việc', en: 'quit job', category: 'conversation-work' },
+  { vi: 'xin nghỉ', en: 'request time off', category: 'conversation-work' },
+  { vi: 'nghỉ phép', en: 'take leave', category: 'conversation-work' },
+  { vi: 'cuộc họp', en: 'meeting', category: 'conversation-work' },
+  { vi: 'dự án', en: 'project', category: 'conversation-work' },
+  { vi: 'deadline', en: 'deadline', category: 'conversation-work' },
+  { vi: 'thành tích', en: 'achievement', category: 'conversation-work' },
+  { vi: 'trách nhiệm', en: 'responsibility', category: 'conversation-work' },
+  { vi: 'nhiệm vụ', en: 'task/duty', category: 'conversation-work' },
+  { vi: 'hiệu quả', en: 'effective', category: 'conversation-work' },
+  
+  // Common conversation phrases - Travel
+  { vi: 'tôi muốn đi du lịch', en: 'I want to travel', category: 'conversation-travel' },
+  { vi: 'vé máy bay', en: 'airplane ticket', category: 'conversation-travel' },
+  { vi: 'vé tàu', en: 'train ticket', category: 'conversation-travel' },
+  { vi: 'vé xe buýt', en: 'bus ticket', category: 'conversation-travel' },
+  { vi: 'khách sạn', en: 'hotel', category: 'conversation-travel' },
+  { vi: 'nhà nghỉ', en: 'guest house', category: 'conversation-travel' },
+  { vi: 'địa điểm du lịch', en: 'tourist spot', category: 'conversation-travel' },
+  { vi: 'bản đồ', en: 'map', category: 'conversation-travel' },
+  { vi: 'hướng dẫn viên', en: 'tour guide', category: 'conversation-travel' },
+  { vi: 'du lịch', en: 'travel/tourism', category: 'conversation-travel' },
+  { vi: 'tham quan', en: 'sightseeing', category: 'conversation-travel' },
+  { vi: 'đặt phòng', en: 'book a room', category: 'conversation-travel' },
+  { vi: 'lịch trình', en: 'itinerary', category: 'conversation-travel' },
+  { vi: 'hành lý', en: 'luggage', category: 'conversation-travel' },
+  { vi: 'hộ chiếu', en: 'passport', category: 'conversation-travel' },
+  { vi: 'visa', en: 'visa', category: 'conversation-travel' },
+  { vi: 'sân bay', en: 'airport', category: 'conversation-travel' },
+  { vi: 'ga', en: 'station', category: 'conversation-travel' },
+  { vi: 'xe taxi', en: 'taxi', category: 'conversation-travel' },
+  { vi: 'xe ôm', en: 'motorbike taxi', category: 'conversation-travel' },
+  
+  // Common conversation phrases - Health
+  { vi: 'tôi bị ốm', en: 'I am sick', category: 'conversation-health' },
+  { vi: 'tôi bị đau đầu', en: 'I have a headache', category: 'conversation-health' },
+  { vi: 'tôi bị sốt', en: 'I have a fever', category: 'conversation-health' },
+  { vi: 'tôi bị ho', en: 'I have a cough', category: 'conversation-health' },
+  { vi: 'tôi bị cảm', en: 'I have a cold', category: 'conversation-health' },
+  { vi: 'tôi bị tiêu chảy', en: 'I have diarrhea', category: 'conversation-health' },
+  { vi: 'tôi bị đau bụng', en: 'I have stomach pain', category: 'conversation-health' },
+  { vi: 'tôi bị đau họng', en: 'I have a sore throat', category: 'conversation-health' },
+  { vi: 'tôi bị dị ứng', en: 'I have an allergy', category: 'conversation-health' },
+  { vi: 'tôi cần gặp bác sĩ', en: 'I need to see a doctor', category: 'conversation-health' },
+  { vi: 'bác sĩ', en: 'doctor', category: 'conversation-health' },
+  { vi: 'y tá', en: 'nurse', category: 'conversation-health' },
+  { vi: 'bệnh viện', en: 'hospital', category: 'conversation-health' },
+  { vi: 'phòng khám', en: 'clinic', category: 'conversation-health' },
+  { vi: 'thuốc', en: 'medicine', category: 'conversation-health' },
+  { vi: 'uống thuốc', en: 'take medicine', category: 'conversation-health' },
+  { vi: 'khám sức khỏe', en: 'health checkup', category: 'conversation-health' },
+  { vi: 'đau', en: 'pain', category: 'conversation-health' },
+  { vi: 'khỏi', en: 'recovered', category: 'conversation-health' },
+  { vi: 'bình thường', en: 'normal', category: 'conversation-health' },
+  
+  // More dinner table expressions
+  { vi: 'mời dùng', en: 'please enjoy', category: 'expressions' },
+  { vi: 'ngon không', en: 'is it delicious?', category: 'expressions' },
+  { vi: 'ngon quá trời', en: 'extremely delicious', category: 'expressions' },
+  { vi: 'ăn vừa đủ', en: 'eat just enough', category: 'expressions' },
+  { vi: 'đừng ăn nhiều', en: 'don\'t eat too much', category: 'expressions' },
+  { vi: 'ăn nhẹ', en: 'eat light', category: 'expressions' },
+  { vi: 'ăn no', en: 'eat until full', category: 'expressions' },
+  { vi: 'đói meo', en: 'starving', category: 'expressions' },
+  { vi: 'không còn gì', en: 'nothing left', category: 'expressions' },
+  { vi: 'còn dư', en: 'still remaining', category: 'expressions' },
+  { vi: 'dọn cơm', en: 'serve rice', category: 'expressions' },
+  { vi: 'dọn món', en: 'serve dishes', category: 'expressions' },
+  { vi: 'rót nước uống', en: 'pour drinks', category: 'expressions' },
+  { vi: 'rót rượu', en: 'pour wine/alcohol', category: 'expressions' },
+  { vi: 'nâng ly', en: 'raise glass/toast', category: 'expressions' },
+  { vi: 'chúc mừng', en: 'cheers/congratulations', category: 'expressions' },
+  { vi: 'chúc sức khỏe', en: 'to your health', category: 'expressions' },
+  { vi: 'bữa ăn tuyệt vời', en: 'wonderful meal', category: 'expressions' },
+  { vi: 'cảm ơn bữa ăn', en: 'thanks for the meal', category: 'expressions' },
+  { vi: 'cảm ơn đã nấu ăn', en: 'thank you for cooking', category: 'expressions' },
 ];

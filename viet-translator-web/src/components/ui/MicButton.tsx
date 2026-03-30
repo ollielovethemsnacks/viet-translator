@@ -3,6 +3,7 @@ interface MicButtonProps {
   onStartListening: () => void;
   onStopListening: () => void;
   isSupported: boolean;
+  onClick?: () => void;
 }
 
 // Helper function to detect iOS
@@ -19,18 +20,29 @@ function detectIOS(): boolean {
   return isIosDevice || (isMacintosh && hasTouch);
 }
 
+/**
+ * MicButton component for speech recognition control
+ * Provides a button for starting and stopping speech recognition with proper accessibility attributes
+ * @param isListening - Boolean indicating if the app is currently listening
+ * @param onStartListening - Callback to start speech recognition
+ * @param onStopListening - Callback to stop speech recognition
+ * @param isSupported - Boolean indicating if speech recognition is supported in the browser
+ * @param onClick - Optional callback for when the button is clicked
+ * @returns JSX Element representing the microphone button
+ */
 export function MicButton({
   isListening,
   onStartListening,
   onStopListening,
-  isSupported
+  isSupported,
+  onClick
 }: MicButtonProps) {
   const isIOS = detectIOS();
 
   if (!isSupported) {
     return (
       <div className="text-center">
-        <p className="text-yellow-600 text-sm">
+        <p className="text-yellow-600 text-sm" role="alert">
           Speech recognition not supported. Please use Safari on iOS or Chrome/Firefox on desktop.
         </p>
       </div>
@@ -39,12 +51,16 @@ export function MicButton({
 
   // On iOS, we need to ensure the click handler is properly registered
   const handleClick = () => {
-    if (isListening) {
-      onStopListening();
+    if (onClick) {
+      onClick();
     } else {
-      // On iOS, ensure we have proper user gesture context
-      // Web Speech API requires user gesture to start recognition on iOS
-      onStartListening();
+      if (isListening) {
+        onStopListening();
+      } else {
+        // On iOS, ensure we have proper user gesture context
+        // Web Speech API requires user gesture to start recognition on iOS
+        onStartListening();
+      }
     }
   };
 
@@ -58,18 +74,20 @@ export function MicButton({
             ? 'bg-red-500 animate-pulse'
             : 'bg-blue-500 hover:bg-blue-600'
         }`}
+        aria-label={isListening ? 'Stop listening' : 'Start listening'}
+        aria-pressed={isListening}
       >
         {isListening ? (
-          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
           </svg>
         ) : (
-          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V16H6a1 1 0 100 2h8a1 1 0 100-2h-3v-5.07z" clipRule="evenodd" />
           </svg>
         )}
       </button>
-      <span className="mt-2 text-sm text-gray-600">
+      <span className="mt-2 text-sm text-gray-600" aria-live="polite">
         {isListening ? 'Listening...' : 'Tap to speak'}
       </span>
       {isIOS && !isListening && (

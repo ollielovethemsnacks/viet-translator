@@ -1,17 +1,20 @@
 import { useState, useCallback } from 'react';
 import { useWebSpeechRecognition, useTextToSpeech } from './hooks/useWebSpeechRecognition';
 import { translationService } from './services/translation';
-import { TranslationView } from './components/TranslationView';
-import { MicButton } from './components/MicButton';
-import { SettingsPanel } from './components/PhoWhisperSettings';
+import { SettingsPanel } from './components/features/PhoWhisperSettings';
 import { useTranslationStore } from './stores/translationStore';
+import { Header } from './components/layout/Header';
+import { MainContent } from './components/layout/MainContent';
+import { LiveTranslationPanel } from './components/layout/LiveTranslationPanel';
+import { ErrorDisplay } from './components/layout/ErrorDisplay';
+import { Footer } from './components/layout/Footer';
 
 function App() {
   // State
   const [view, setView] = useState<'main' | 'settings' | 'about'>('main');
   const [liveTranslation, setLiveTranslation] = useState('');
   const { addTranslation } = useTranslationStore();
-  
+
   // Web Speech Recognition hook (primary method)
   const {
     isListening,
@@ -21,6 +24,7 @@ function App() {
     startListening: startWebSpeechListening,
     stopListening: stopWebSpeechListening,
     isIos
+    // resetSpeech is not being used - removed
   } = useWebSpeechRecognition({
     language: 'vi-VN', // Vietnamese language
     onResult: useCallback((text: string) => {
@@ -31,10 +35,18 @@ function App() {
     onInterim: useCallback((text: string) => {
       const translation = translationService.translate(text);
       setLiveTranslation(translation);
+    }, []),
+    onError: useCallback((error: string | null) => {
+      // Error is already handled by the hook's state, but we can add custom logic here if needed
+      console.log('Speech recognition error:', error);
+    }, []),
+    onListeningChange: useCallback((isListening: boolean) => {
+      // Update local state or trigger side effects when listening state changes
+      console.log('Listening state changed:', isListening);
     }, [])
   });
 
-  const { speak } = useTextToSpeech();
+  const { speak /*, voicesLoaded, availableVoices */ } = useTextToSpeech(); // Removed unused return values
 
   const startListening = useCallback(() => {
     startWebSpeechListening();
@@ -47,6 +59,8 @@ function App() {
   const handleSpeak = (text: string) => {
     speak(text);
   };
+
+  // Handler to reset speech state - REMOVED as unused
 
   if (view === 'settings') {
     return (
@@ -99,89 +113,35 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b px-4 py-3 flex items-center justify-between">
-        <button onClick={() => setView('about')} className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">VT</span>
-          </div>
-          <h1 className="font-bold text-lg">Viet Translator</h1>
-        </button>
-        <div className="flex gap-2">
-          {isListening && (
-            <div className="flex items-center gap-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-              {isIos ? 'WEB SPEECH' : 'LISTENING'}
-            </div>
-          )}
-          <button
-            onClick={() => setView('settings')}
-            className="p-2"
-          >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
-        </div>
-      </header>
+      <Header
+        onAboutClick={() => setView('about')}
+        onSettingsClick={() => setView('settings')}
+        isListening={isListening}
+        isIos={isIos}
+      />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-4">
-        <TranslationView onSpeak={handleSpeak} />
-      </main>
+      <MainContent onSpeak={handleSpeak} />
 
       {/* Live Translation - Shows while listening */}
-      {isListening && (
-        <div className="bg-blue-50 border-t border-blue-200 px-4 py-3">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-xs font-medium text-blue-600 uppercase tracking-wide">
-              {isIos ? 'Live Translation (Web Speech API)' : 'Live Translation'}
-            </span>
-          </div>
-
-          {/* Original Vietnamese */}
-          {transcript && (
-            <p className="text-sm text-blue-800 mb-1">
-              <span className="opacity-60">Hearing:</span> {transcript}
-            </p>
-          )}
-
-          {/* English Translation */}
-          {liveTranslation && (
-            <p className="text-lg font-semibold text-blue-900">
-              {liveTranslation}
-            </p>
-          )}
-        </div>
-      )}
+      <LiveTranslationPanel
+        isListening={isListening}
+        isIos={isIos}
+        transcript={transcript}
+        liveTranslation={liveTranslation}
+      />
 
       {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border-t border-red-200 px-4 py-2">
-          <p className="text-sm text-red-800">{error}</p>
-        </div>
-      )}
+      <ErrorDisplay error={error} />
 
-      {/* Mic Button */}
-      <div className="bg-white border-t p-4">
-        <MicButton
-          isListening={isListening}
-          onStartListening={startListening}
-          onStopListening={stopListening}
-          isSupported={isSupported}
-        />
-        {isIos && !isListening && (
-          <p className="text-center text-xs text-blue-600 mt-2">
-            Uses Web Speech API (requires internet connection)
-          </p>
-        )}
-        {!isIos && !isListening && (
-          <p className="text-center text-xs text-blue-600 mt-2">
-            Uses Web Speech API for speech recognition
-          </p>
-        )}
-      </div>
+      {/* Footer */}
+      <Footer
+        isListening={isListening}
+        isSupported={isSupported}
+        isIos={isIos}
+        onStartListening={startListening}
+        onStopListening={stopListening}
+      />
     </div>
   );
 }

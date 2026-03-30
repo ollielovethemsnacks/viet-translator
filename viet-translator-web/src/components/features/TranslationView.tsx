@@ -1,4 +1,5 @@
-import { useTranslationStore } from '../stores/translationStore';
+import React from 'react';
+import { useTranslationStore } from '../../stores/translationStore';
 
 const speakerColors = ['#3B82F6', '#10B981', '#F59E0B', '#EC4899'];
 
@@ -9,26 +10,28 @@ interface TranslationBubbleProps {
   onSpeak?: (text: string) => void;
 }
 
-function TranslationBubble({ transcription, translation, color, onSpeak }: TranslationBubbleProps) {
+const TranslationBubble = React.memo(({ transcription, translation, color, onSpeak }: TranslationBubbleProps) => {
   return (
     <div className="mb-4">
       <div className="flex items-start gap-3">
         <div
           className="w-3 h-3 rounded-full mt-2 flex-shrink-0"
           style={{ backgroundColor: color }}
+          aria-hidden="true"
         />
         <div className="flex-1">
           <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100">
-            <p className="text-gray-800 font-medium">{transcription}</p>
+            <p className="text-gray-800 font-medium" lang="vi">{transcription}</p>
             <div className="mt-2 pt-2 border-t border-gray-100">
-              <p className="text-blue-600">{translation}</p>
+              <p className="text-blue-600" lang="en">{translation}</p>
             </div>
             {onSpeak && (
               <button
                 onClick={() => onSpeak(translation)}
                 className="mt-2 text-xs text-gray-500 hover:text-blue-500 flex items-center gap-1"
+                aria-label={`Speak translation: ${translation}`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 </svg>
                 Speak
@@ -39,25 +42,28 @@ function TranslationBubble({ transcription, translation, color, onSpeak }: Trans
       </div>
     </div>
   );
-}
+});
+
+TranslationBubble.displayName = 'TranslationBubble';
 
 interface TranslationViewProps {
   onSpeak?: (text: string) => void;
 }
 
-export function TranslationView({ onSpeak }: TranslationViewProps) {
+export const TranslationView = React.memo(({ onSpeak }: TranslationViewProps) => {
   const { translations } = useTranslationStore();
 
   const getColor = (index: number) => speakerColors[index % speakerColors.length];
 
   if (translations.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
+      <div className="text-center py-12 text-gray-500" role="status" aria-live="polite">
         <svg
           className="h-16 w-16 mx-auto mb-4 opacity-30"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -73,16 +79,19 @@ export function TranslationView({ onSpeak }: TranslationViewProps) {
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1" role="list" aria-label="Translation history">
       {translations.map((item: { transcription: string; translation: string }, index: number) => (
-        <TranslationBubble
-          key={index}
-          transcription={item.transcription}
-          translation={item.translation}
-          color={getColor(index)}
-          onSpeak={onSpeak}
-        />
+        <div key={index} role="listitem">
+          <TranslationBubble
+            transcription={item.transcription}
+            translation={item.translation}
+            color={getColor(index)}
+            onSpeak={onSpeak}
+          />
+        </div>
       ))}
     </div>
   );
-}
+});
+
+TranslationView.displayName = 'TranslationView';
