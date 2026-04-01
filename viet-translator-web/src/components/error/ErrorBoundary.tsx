@@ -27,6 +27,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log the error to an error reporting service
     console.error('Error caught by boundary:', error, errorInfo);
+    // Log the stack trace for debugging
+    console.error('Full error stack:', error?.stack);
   }
 
   render(): React.ReactNode {
