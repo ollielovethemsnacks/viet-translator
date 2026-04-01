@@ -54,6 +54,12 @@ export class OptimizedTranslationService {
       'Đ': 'D'
     };
 
+    // Pre-compile frequently used regex patterns FIRST (before removeTones is called)
+    this.compiledPatterns = [
+      new RegExp(/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ]/gi),
+      new RegExp(/[ÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]/gi)
+    ];
+
     // Pre-build toneless mappings for performance
     this.tonelessMap = new Map();
     for (const entry of dictionary) {
@@ -63,12 +69,6 @@ export class OptimizedTranslationService {
 
     // Build trie for efficient prefix matching
     this.trie = this.buildTrie(dictionary);
-
-    // Pre-compile frequently used regex patterns
-    this.compiledPatterns = [
-      new RegExp(/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ]/gi),
-      new RegExp(/[ÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴĐ]/gi)
-    ];
   }
 
   private buildTrie(entries: DictionaryEntry[]): TrieNode {
