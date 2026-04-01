@@ -28,13 +28,24 @@ function App() {
   } = useWebSpeechRecognition({
     language: 'vi-VN', // Vietnamese language
     onResult: useCallback((text: string) => {
-      const translation = translationService.translate(text);
-      addTranslation(text, translation);
-      setLiveTranslation('');
+      try {
+        const translation = translationService.translate(text);
+        addTranslation(text, translation);
+        setLiveTranslation('');
+      } catch (error) {
+        console.error('Error during translation:', error);
+        addTranslation(text, `[Translation Error: ${text}]`);
+        setLiveTranslation('');
+      }
     }, [addTranslation]),
     onInterim: useCallback((text: string) => {
-      const translation = translationService.translate(text);
-      setLiveTranslation(translation);
+      try {
+        const translation = translationService.translate(text);
+        setLiveTranslation(translation);
+      } catch (error) {
+        console.error('Error during interim translation:', error);
+        setLiveTranslation(`[Translation Error: ${text}]`);
+      }
     }, []),
     onError: useCallback((error: string | null) => {
       // Error is already handled by the hook's state, but we can add custom logic here if needed

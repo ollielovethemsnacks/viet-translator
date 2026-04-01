@@ -41,12 +41,19 @@ export function useWebSpeechRecognition(options: SpeechRecognitionOptions = {}):
 
   // Ensure cleanup on unmount
   useEffect(() => {
-    isMountedRef.current = true;
+    // Only set to true initially if not already set
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+    }
 
     return () => {
       isMountedRef.current = false;
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          console.warn('Error stopping recognition on unmount:', e);
+        }
       }
     };
   }, []);
@@ -55,19 +62,24 @@ export function useWebSpeechRecognition(options: SpeechRecognitionOptions = {}):
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setIsSupported(false);
-      const errorMsg = 'Web Speech API not supported in this browser';
-      setError(errorMsg);
-      if (onError) {
-        onError(errorMsg);
-      }
+    // Check if already initialized to prevent double initialization in StrictMode
+    if (recognitionRef.current) {
       return;
     }
 
     try {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        setIsSupported(false);
+        const errorMsg = 'Web Speech API not supported in this browser';
+        setError(errorMsg);
+        if (onError) {
+          onError(errorMsg);
+        }
+        return;
+      }
+
       // Initialize recognition object
       const recognition = new SpeechRecognition();
       recognition.continuous = true; // Enable continuous recognition
